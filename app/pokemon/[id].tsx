@@ -1,5 +1,7 @@
+import { StatBar } from "@/components/StatBar/StatBar";
 import { fetchPokemonById } from "@/services/pokeapi";
 import { PokemonDetails } from "@/types/pokemon";
+import { pokemonTypeColors } from "@/utils/pokemonColors";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { Image, ScrollView, Text, View } from "react-native";
@@ -38,9 +40,11 @@ export default function PokemonDetailScreen() {
     return <Text>{error}</Text>;
   }
 
+  const backgroundColor = pokemonTypeColors[pokemon.types[0]];
+
   return (
     <ScrollView>
-      <View>
+      <View style={{ backgroundColor, padding: 16 }}>
         <Text style={{ fontSize: 28, fontWeight: "bold" }}>{pokemon.name}</Text>
 
         <Image source={{ uri: pokemon.image }} style={{ width: 200, height: 200 }} />
@@ -59,10 +63,9 @@ export default function PokemonDetailScreen() {
 
       <View>
         <Text>Stats</Text>
+
         {pokemon.stats.map((stat) => (
-          <Text key={stat.name}>
-            {stat.name}: {stat.value}
-          </Text>
+          <StatBar key={stat.name} label={stat.name} value={stat.value} maxValue={255} />
         ))}
       </View>
     </ScrollView>
