@@ -1,30 +1,49 @@
-import { PokemonListItem } from "@/types/pokemon";
+import { getPokemonGradient } from "@/utils/pokemonGradients";
+import { LinearGradient } from "expo-linear-gradient";
 import { Image, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { TypeBadge } from "../TypeBadge/TypeBadge";
 import { styles } from "./styles";
 
-type Props = {
-  pokemon: PokemonListItem;
+type PokemonHeaderProps = {
+  id: number;
+  name: string;
+  image: string;
+  types: string[];
 };
 
-function PokemonHeader({ pokemon }: Props) {
-  const formattedNumber = `#${pokemon.id.toString().padStart(4, "0")}`;
+function PokemonHeader({ id, name, image, types }: PokemonHeaderProps) {
+  const formattedNumber = `#${id.toString().padStart(4, "0")}`;
+  const gradientColors = getPokemonGradient(types);
+  const insets = useSafeAreaInsets();
 
   return (
-    <View>
-      <View style={styles.title}>
-        <Text style={styles.name}>{pokemon.name}</Text>
+    <LinearGradient
+      colors={gradientColors}
+      style={[styles.container, { paddingTop: insets.top + 16 }]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}>
+      <Image
+        source={require("@/assets/images/pokeball2.png")}
+        style={styles.backgroundIcon}
+        resizeMode="contain"
+      />
+
+      <View style={styles.topRow}>
+        <Text style={styles.name}>{name}</Text>
         <Text style={styles.number}>{formattedNumber}</Text>
       </View>
 
+      {/* Types */}
       <View style={styles.types}>
-        {pokemon.types.map((type) => (
+        {types.map((type) => (
           <TypeBadge key={type} type={type} extend={true} />
         ))}
       </View>
 
-      <Image source={{ uri: pokemon.image }} style={styles.image} />
-    </View>
+      {/* Image */}
+      <Image source={{ uri: image }} style={styles.image} resizeMode="contain" />
+    </LinearGradient>
   );
 }
 export default PokemonHeader;

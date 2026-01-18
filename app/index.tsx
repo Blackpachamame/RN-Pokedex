@@ -3,7 +3,7 @@ import { fetchPokemonList } from "@/services/pokeapi";
 import { PokemonListItem } from "@/types/pokemon";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
-import { FlatList, Pressable, Text } from "react-native";
+import { FlatList, Pressable, Text, View } from "react-native";
 
 export default function Index() {
   const [pokemons, setPokemons] = useState<PokemonListItem[]>([]);
@@ -37,7 +37,8 @@ export default function Index() {
   return (
     <FlatList
       data={pokemons}
-      keyExtractor={(item) => item.id.toString()}
+      style={{ padding: 16 }}
+      ItemSeparatorComponent={() => <View style={{ height: 16 }} />}
       renderItem={({ item }) => (
         <Pressable onPress={() => router.push(`/pokemon/${item.id}`)}>
           <PokemonCard pokemon={item} />

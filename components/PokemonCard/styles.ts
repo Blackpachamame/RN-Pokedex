@@ -4,25 +4,24 @@ export const styles = StyleSheet.create({
   card: {
     padding: 16,
     borderRadius: 12,
-    backgroundColor: "#f2f2f2",
+    // borderWidth: 1,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    gap: 6,
-    marginTop: 32,
   },
   number: {
     fontSize: 16,
     fontWeight: "900",
-    color: "#0000002f",
+    color: "rgba(0, 0, 0, 0.3)",
   },
-  title: {
-    gap: 6,
+  container: {
+    height: 90,
+    justifyContent: "space-between",
   },
   name: {
-    fontSize: 32,
+    fontSize: 24,
     fontWeight: "bold",
-    lineHeight: 28,
+    lineHeight: 24,
     color: "#26262b",
     textTransform: "capitalize",
   },
@@ -38,7 +37,7 @@ export const styles = StyleSheet.create({
     backgroundColor: "#ddd",
   },
   image: {
-    width: 100,
-    height: 100,
+    width: 90,
+    height: 90,
   },
 });

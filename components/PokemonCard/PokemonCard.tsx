@@ -12,9 +12,11 @@ function PokemonCard({ pokemon }: Props) {
 
   return (
     <View style={[styles.card, { backgroundColor: "#dfdfdf" }]}>
-      <View style={styles.title}>
-        <Text style={styles.number}>{formattedNumber}</Text>
-        <Text style={styles.name}>{pokemon.name}</Text>
+      <View style={styles.container}>
+        <View>
+          <Text style={styles.number}>{formattedNumber}</Text>
+          <Text style={styles.name}>{pokemon.name}</Text>
+        </View>
 
         <View style={styles.types}>
           {pokemon.types.map((type) => (
