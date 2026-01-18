@@ -20,7 +20,7 @@ export async function fetchPokemonList(limit: number = 10): Promise<PokemonListI
           image: data.sprites.other["official-artwork"].front_default,
           types: data.types.map((t: any) => t.type.name),
         };
-      })
+      }),
     );
 
     return pokemonDetails;

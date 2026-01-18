@@ -1,10 +1,11 @@
+import PokemonHeader from "@/components/PokemonHeader/PokemonHeader";
 import { StatBar } from "@/components/StatBar/StatBar";
 import { fetchPokemonById } from "@/services/pokeapi";
 import { PokemonDetails } from "@/types/pokemon";
 import { pokemonTypeColors } from "@/utils/pokemonColors";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { Image, ScrollView, Text, View } from "react-native";
+import { ScrollView, Text, View } from "react-native";
 
 export default function PokemonDetailScreen() {
   const { id } = useLocalSearchParams();
@@ -45,15 +46,7 @@ export default function PokemonDetailScreen() {
   return (
     <ScrollView>
       <View style={{ backgroundColor, padding: 16 }}>
-        <Text style={{ fontSize: 28, fontWeight: "bold" }}>{pokemon.name}</Text>
-
-        <Image source={{ uri: pokemon.image }} style={{ width: 200, height: 200 }} />
-
-        <View style={{ flexDirection: "row", gap: 8 }}>
-          {pokemon.types.map((type) => (
-            <Text key={type}>{type}</Text>
-          ))}
-        </View>
+        <PokemonHeader pokemon={pokemon} />
       </View>
 
       <View>
