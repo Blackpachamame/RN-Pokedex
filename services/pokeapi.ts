@@ -41,6 +41,7 @@ export async function fetchPokemonById(id: number): Promise<PokemonDetails> {
       types: data.types.map((t: any) => t.type.name),
       height: data.height,
       weight: data.weight,
+      abilities: data.abilities.map((a: any) => a.ability.name),
       stats: data.stats.map((stat: any) => ({
         name: stat.stat.name,
         value: stat.base_stat,

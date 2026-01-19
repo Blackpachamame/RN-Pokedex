@@ -11,7 +11,9 @@ export const styles = StyleSheet.create({
   },
   iconWrapper: {
     borderRadius: 14,
-    padding: 4,
+    padding: 6,
+    justifyContent: "center",
+    alignItems: "center",
   },
   text: {
     color: "#fff",

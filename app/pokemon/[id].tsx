@@ -1,11 +1,13 @@
 import PokemonHeader from "@/components/PokemonHeader/PokemonHeader";
-import { StatBar } from "@/components/StatBar/StatBar";
 import { fetchPokemonById } from "@/services/pokeapi";
 import { PokemonDetails } from "@/types/pokemon";
 import { pokemonTypeColors } from "@/utils/pokemonColors";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
+import AboutTab from "./tabs/AboutTab";
+import PokemonTabs from "./tabs/PokemonTabs";
+import StatsTab from "./tabs/StatsTab";
 
 export default function PokemonDetailScreen() {
   const { id } = useLocalSearchParams();
@@ -14,6 +16,7 @@ export default function PokemonDetailScreen() {
   const [pokemon, setPokemon] = useState<PokemonDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<"about" | "stats" | "evolutions">("about");
 
   useEffect(() => {
     async function loadPokemon() {
@@ -21,7 +24,7 @@ export default function PokemonDetailScreen() {
         const data = await fetchPokemonById(pokemonId);
         setPokemon(data);
       } catch (err) {
-        console.error(err);
+        console.log(err);
         setError("Error cargando el Pokémon");
       } finally {
         setLoading(false);
@@ -33,47 +36,48 @@ export default function PokemonDetailScreen() {
     }
   }, [pokemonId]);
 
-  if (loading) {
-    return <Text>Cargando...</Text>;
-  }
-
-  if (error || !pokemon) {
-    return <Text>{error}</Text>;
-  }
+  if (loading) return <Text>Cargando...</Text>;
+  if (error || !pokemon) return <Text>{error}</Text>;
 
   const backgroundColor = pokemonTypeColors[pokemon.types[0]];
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#fff" }}>
-      <View style={{ backgroundColor }}>
-        <PokemonHeader
-          id={pokemon.id}
-          name={pokemon.name}
-          image={pokemon.image}
-          types={pokemon.types}
-        />
+    <View style={{ flex: 1, backgroundColor }}>
+      {/* Header + Tabs (continuidad visual) */}
+      <PokemonHeader
+        id={pokemon.id}
+        name={pokemon.name}
+        image={pokemon.image}
+        types={pokemon.types}
+      />
+
+      <PokemonTabs activeTab={activeTab} onTabChange={setActiveTab} />
+
+      {/* Content */}
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: "#fff",
+          borderTopLeftRadius: 24,
+          borderTopRightRadius: 24,
+          marginTop: -16,
+        }}>
+        <ScrollView
+          contentContainerStyle={{
+            paddingTop: 32,
+            paddingHorizontal: 16,
+            paddingBottom: 32,
+          }}
+          showsVerticalScrollIndicator={false}>
+          {activeTab === "about" && <AboutTab pokemon={pokemon} />}
+          {activeTab === "stats" && <StatsTab stats={pokemon.stats} />}
+          {activeTab === "evolutions" && <EvolutionsPlaceholder />}
+        </ScrollView>
       </View>
-
-      <ScrollView
-        contentContainerStyle={{
-          paddingTop: 32,
-          paddingHorizontal: 16,
-          paddingBottom: 32,
-        }}
-        showsVerticalScrollIndicator={false}>
-        <View>
-          <Text>Altura: {pokemon.height}</Text>
-          <Text>Peso: {pokemon.weight}</Text>
-        </View>
-
-        <View>
-          <Text>Stats</Text>
-
-          {pokemon.stats.map((stat) => (
-            <StatBar key={stat.name} label={stat.name} value={stat.value} maxValue={255} />
-          ))}
-        </View>
-      </ScrollView>
     </View>
   );
+}
+
+function EvolutionsPlaceholder() {
+  return <Text style={{ textAlign: "center" }}>Coming soon</Text>;
 }

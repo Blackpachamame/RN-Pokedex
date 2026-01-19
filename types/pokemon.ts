@@ -17,6 +17,7 @@ export type PokemonDetails = {
   types: string[];
   height: number;
   weight: number;
+  abilities: string[];
   stats: PokemonStat[];
 };
 

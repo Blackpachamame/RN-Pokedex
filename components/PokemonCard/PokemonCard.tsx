@@ -24,8 +24,9 @@ function PokemonCard({ pokemon }: Props) {
           ))}
         </View>
       </View>
-
-      <Image source={{ uri: pokemon.image }} style={styles.image} />
+      <View style={{ height: "100%", width: 90 }}>
+        <Image source={{ uri: pokemon.image }} style={styles.image} resizeMode="contain" />
+      </View>
     </View>
   );
 }

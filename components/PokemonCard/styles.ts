@@ -37,7 +37,8 @@ export const styles = StyleSheet.create({
     backgroundColor: "#ddd",
   },
   image: {
-    width: 90,
-    height: 90,
+    width: "100%",
+    height: undefined,
+    aspectRatio: 1,
   },
 });

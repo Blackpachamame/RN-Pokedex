@@ -1,33 +1,41 @@
-import { Text, View } from "react-native";
+import { useEffect, useRef } from "react";
+import { Animated, View } from "react-native";
 import { styles } from "./styles";
 
 type Props = {
-  label: string;
   value: number;
   maxValue: number;
   color?: string;
 };
 
-export function StatBar({ label, value, maxValue, color = "#4CAF50" }: Props) {
+export function StatBar({ value, maxValue, color = "#4CAF50" }: Props) {
+  const animatedValue = useRef(new Animated.Value(0)).current;
   const percentage = Math.min(value / maxValue, 1);
 
+  useEffect(() => {
+    Animated.timing(animatedValue, {
+      toValue: percentage,
+      duration: 600,
+      useNativeDriver: false,
+    }).start();
+  }, [percentage]);
+
+  const widthInterpolated = animatedValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: ["0%", "100%"],
+  });
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.label}>{label}</Text>
-
-      <View style={styles.barBackground}>
-        <View
-          style={[
-            styles.barFill,
-            {
-              width: `${percentage * 100}%`,
-              backgroundColor: color,
-            },
-          ]}
-        />
-      </View>
-
-      <Text style={styles.value}>{value}</Text>
+    <View style={styles.barBackground}>
+      <Animated.View
+        style={[
+          styles.barFill,
+          {
+            width: widthInterpolated,
+            backgroundColor: color,
+          },
+        ]}
+      />
     </View>
   );
 }

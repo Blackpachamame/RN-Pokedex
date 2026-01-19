@@ -1,4 +1,4 @@
-import { getPokemonGradient } from "@/utils/pokemonGradients";
+import { getMultiTypeGradient } from "@/utils/color";
 import { LinearGradient } from "expo-linear-gradient";
 import { Image, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -14,15 +14,15 @@ type PokemonHeaderProps = {
 
 function PokemonHeader({ id, name, image, types }: PokemonHeaderProps) {
   const formattedNumber = `#${id.toString().padStart(4, "0")}`;
-  const gradientColors = getPokemonGradient(types);
+  const gradientColors = getMultiTypeGradient(types);
   const insets = useSafeAreaInsets();
 
   return (
     <LinearGradient
       colors={gradientColors}
       style={[styles.container, { paddingTop: insets.top + 16 }]}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}>
+      start={{ x: 0, y: 1 }}
+      end={{ x: 0, y: 0 }}>
       <Image
         source={require("@/assets/images/pokeball2.png")}
         style={styles.backgroundIcon}
