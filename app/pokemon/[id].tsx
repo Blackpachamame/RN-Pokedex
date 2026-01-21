@@ -4,7 +4,7 @@ import { PokemonDetails } from "@/types/pokemon";
 import { pokemonTypeColors } from "@/utils/pokemonColors";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { ScrollView, Text, View } from "react-native";
+import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from "react-native";
 import AboutTab from "./tabs/AboutTab";
 import PokemonTabs from "./tabs/PokemonTabs";
 import StatsTab from "./tabs/StatsTab";
@@ -16,7 +16,7 @@ export default function PokemonDetailScreen() {
   const [pokemon, setPokemon] = useState<PokemonDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"about" | "stats" | "evolutions">("about");
+  const [activeTab, setActiveTab] = useState<"about" | "stats" | "evolutions" | "moves">("about");
 
   useEffect(() => {
     async function loadPokemon() {
@@ -36,14 +36,28 @@ export default function PokemonDetailScreen() {
     }
   }, [pokemonId]);
 
-  if (loading) return <Text>Cargando...</Text>;
-  if (error || !pokemon) return <Text>{error}</Text>;
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" color="#6390F0" />
+      </View>
+    );
+  }
 
-  const backgroundColor = pokemonTypeColors[pokemon.types[0]];
+  if (error || !pokemon) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text style={{ fontSize: 16, color: "#64748B" }}>{error}</Text>
+      </View>
+    );
+  }
+
+  const accentColor = pokemonTypeColors[pokemon.types[0]] || "#6390F0";
+  const RADIUS = 16;
 
   return (
-    <View style={{ flex: 1, backgroundColor }}>
-      {/* Header + Tabs (continuidad visual) */}
+    <View style={{ flex: 1, backgroundColor: accentColor }}>
+      {/* Header */}
       <PokemonHeader
         id={pokemon.id}
         name={pokemon.name}
@@ -51,16 +65,48 @@ export default function PokemonDetailScreen() {
         types={pokemon.types}
       />
 
-      <PokemonTabs activeTab={activeTab} onTabChange={setActiveTab} />
+      {/* Tabs - Flotan sobre el header */}
+      <View style={{ zIndex: 10, position: "relative" }}>
+        <PokemonTabs activeTab={activeTab} onTabChange={setActiveTab} accentColor={accentColor} />
+
+        {/* PIEZA DE RADIO INVERTIDO */}
+        <View
+          style={[
+            styles.invertedRadiusContainer,
+            { height: RADIUS, backgroundColor: "#fff", left: 0 },
+          ]}>
+          <View
+            style={[
+              styles.invertedRadiusCurve,
+              {
+                backgroundColor: accentColor,
+                borderBottomRightRadius: RADIUS,
+              },
+            ]}
+          />
+        </View>
+        <View
+          style={[
+            styles.invertedRadiusContainer,
+            { height: RADIUS, backgroundColor: "#fff", right: 0 },
+          ]}>
+          <View
+            style={[
+              styles.invertedRadiusCurve,
+              {
+                backgroundColor: accentColor,
+                borderBottomLeftRadius: RADIUS,
+              },
+            ]}
+          />
+        </View>
+      </View>
 
       {/* Content */}
       <View
         style={{
           flex: 1,
           backgroundColor: "#fff",
-          borderTopLeftRadius: 24,
-          borderTopRightRadius: 24,
-          marginTop: -16,
         }}>
         <ScrollView
           contentContainerStyle={{
@@ -72,6 +118,7 @@ export default function PokemonDetailScreen() {
           {activeTab === "about" && <AboutTab pokemon={pokemon} />}
           {activeTab === "stats" && <StatsTab stats={pokemon.stats} />}
           {activeTab === "evolutions" && <EvolutionsPlaceholder />}
+          {activeTab === "moves" && <MovesPlaceholder />}
         </ScrollView>
       </View>
     </View>
@@ -79,5 +126,35 @@ export default function PokemonDetailScreen() {
 }
 
 function EvolutionsPlaceholder() {
-  return <Text style={{ textAlign: "center" }}>Coming soon</Text>;
+  return (
+    <View style={{ padding: 32, alignItems: "center" }}>
+      <Text style={{ fontSize: 48, marginBottom: 8 }}>🔄</Text>
+      <Text style={{ fontSize: 16, color: "#64748B", textAlign: "center" }}>
+        Evolution chain coming soon
+      </Text>
+    </View>
+  );
 }
+
+function MovesPlaceholder() {
+  return (
+    <View style={{ padding: 32, alignItems: "center" }}>
+      <Text style={{ fontSize: 48, marginBottom: 8 }}>⚔️</Text>
+      <Text style={{ fontSize: 16, color: "#64748B", textAlign: "center" }}>
+        Moves list coming soon
+      </Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  invertedRadiusContainer: {
+    position: "absolute",
+    zIndex: 999,
+    bottom: 0,
+  },
+  invertedRadiusCurve: {
+    flex: 1,
+    width: 16,
+  },
+});

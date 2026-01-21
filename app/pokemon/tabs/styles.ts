@@ -1,38 +1,66 @@
-import { StyleSheet } from "react-native";
+import { Platform, StyleSheet } from "react-native";
 
 const styles = StyleSheet.create({
-  tabsContainer: {
+  container: {
+    backgroundColor: "transparent",
+    zIndex: 10,
+  },
+  tabsWrapper: {
     flexDirection: "row",
     justifyContent: "space-around",
-    paddingHorizontal: 16,
-    paddingBottom: 12,
-    backgroundColor: "transparent", // hereda el fondo del header
-  },
-
-  tabButton: {
-    flex: 1,
-  },
-
-  tabInner: {
+    alignItems: "center",
+    backgroundColor: "#FFFFFF",
+    borderTopLeftRadius: 32,
+    borderTopRightRadius: 32,
+    marginHorizontal: 16,
     paddingVertical: 10,
-    borderRadius: 20,
-    backgroundColor: "#fff",
-    marginHorizontal: 6,
+    ...Platform.select({
+      web: {
+        paddingHorizontal: 8,
+      },
+      default: {
+        paddingHorizontal: 0,
+      },
+    }),
   },
-
-  activeTab: {
-    backgroundColor: "transparent",
+  tab: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
   },
-
-  tabText: {
-    textAlign: "center",
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#333",
+  tabContent: {
+    position: "relative",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    minWidth: 48,
   },
+  tabBackground: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    borderRadius: 24,
 
-  activeTabText: {
+    // Sombra del background activo
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    elevation: 8,
+
+    // CRÍTICO: Mantener border radius
+    overflow: "hidden",
+  },
+  tabLabel: {
     color: "#fff",
+    fontSize: 13,
+    fontWeight: "700",
+    letterSpacing: 0.3,
   },
 });
 

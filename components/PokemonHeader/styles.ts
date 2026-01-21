@@ -25,6 +25,7 @@ export const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "700",
     letterSpacing: 1,
+    marginTop: 8,
     color: "rgba(255,255,255,0.6)",
   },
   backgroundIcon: {
