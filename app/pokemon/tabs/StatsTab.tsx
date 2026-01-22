@@ -9,15 +9,18 @@ type Stat = {
 
 type Props = {
   stats: Stat[];
+  color: string;
 };
 
-export default function StatsTab({ stats }: Props) {
+export default function StatsTab({ stats, color }: Props) {
+  console.log(stats, color);
+
   return (
     <View style={styles.container}>
       {stats.map((stat) => (
         <View key={stat.name} style={styles.row}>
           <Text style={styles.statName}>{stat.name}</Text>
-          <StatBar value={stat.value} maxValue={255} />
+          <StatBar value={stat.value} maxValue={255} color={color} />
           <Text style={styles.statValue}>{stat.value}</Text>
         </View>
       ))}

@@ -2,29 +2,130 @@ import { StyleSheet } from "react-native";
 
 const styles = StyleSheet.create({
   container: {
-    gap: 16,
+    gap: 24,
+    paddingBottom: 16,
+  },
+  separator: {
+    height: 1,
+    backgroundColor: "#E2E8F0",
   },
 
-  row: {
+  descriptionContainer: {
+    marginBottom: 8,
+  },
+  description: {
+    fontSize: 15,
+    lineHeight: 24,
+    color: "#475569",
+  },
+
+  dataGrid: {
+    gap: 12,
+  },
+  gridRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    backgroundColor: "#F6F7F9",
-    borderRadius: 12,
+    gap: 12,
+  },
+  dataCard: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
+  dataLabel: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#1E293B",
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+    marginBottom: 8,
+  },
+  dataValue: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#1E293B",
   },
 
-  label: {
-    fontSize: 14,
-    color: "#6B7280",
-    fontWeight: "500",
+  section: {
+    gap: 12,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#1E293B",
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
   },
 
-  value: {
-    fontSize: 14,
-    color: "#111827",
+  categoryText: {
+    fontSize: 15,
     fontWeight: "600",
+    color: "#334155",
     textTransform: "capitalize",
+  },
+
+  abilitiesText: {
+    fontSize: 15,
+    fontWeight: "600",
+    color: "#334155",
+  },
+
+  weaknessesContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+  },
+
+  // Evolution Chain Styles
+  evolutionChain: {
+    gap: 0,
+  },
+  evolutionRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  evolutionCard: {
+    flex: 1,
+    backgroundColor: "#F8FAFC",
+    borderRadius: 16,
+    padding: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    borderWidth: 2,
+    borderColor: "transparent",
+  },
+  evolutionCardCurrent: {
+    borderColor: "#3B82F6",
+    backgroundColor: "#EFF6FF",
+  },
+  evolutionImage: {
+    width: 60,
+    height: 60,
+  },
+  evolutionInfo: {
+    flex: 1,
+  },
+  evolutionNumber: {
+    fontSize: 11,
+    fontWeight: "600",
+    color: "#94A3B8",
+    marginBottom: 2,
+  },
+  evolutionName: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#1E293B",
+    marginBottom: 2,
+  },
+  evolutionLevel: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#64748B",
+  },
+  evolutionArrow: {
+    paddingHorizontal: 8,
   },
 });
 

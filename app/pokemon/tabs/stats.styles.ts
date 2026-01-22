@@ -4,40 +4,24 @@ const styles = StyleSheet.create({
   container: {
     gap: 16,
   },
-
   row: {
+    flex: 1,
     flexDirection: "row",
     alignItems: "center",
+    gap: 12,
   },
-
   statName: {
-    width: 80,
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: "600",
-    color: "#374151",
+    color: "#64748B",
     textTransform: "capitalize",
+    width: 100,
   },
-
-  barContainer: {
-    flex: 1,
-    height: 8,
-    backgroundColor: "#E5E7EB",
-    borderRadius: 999,
-    marginHorizontal: 12,
-    overflow: "hidden",
-  },
-
-  barFill: {
-    height: "100%",
-    backgroundColor: "#3B82F6",
-    borderRadius: 999,
-  },
-
   statValue: {
-    width: 32,
-    fontSize: 12,
-    fontWeight: "600",
-    color: "#111827",
+    fontSize: 15,
+    fontWeight: "700",
+    color: "#1E293B",
+    width: 40,
     textAlign: "right",
   },
 });

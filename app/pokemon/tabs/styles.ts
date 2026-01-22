@@ -47,10 +47,7 @@ const styles = StyleSheet.create({
     borderRadius: 24,
 
     // Sombra del background activo
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.2,
-    shadowRadius: 10,
+    boxShadow: "0 6 10 0 rgba(0, 0, 0, 0.2)",
     elevation: 8,
 
     // CRÍTICO: Mantener border radius

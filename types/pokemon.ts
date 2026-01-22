@@ -10,6 +10,15 @@ export type PokemonStat = {
   value: number;
 };
 
+export type EvolutionChain = {
+  id: number;
+  name: string;
+  image: string;
+  minLevel: number | null;
+  method?: string; // "Level Up", "Stone", "Trade", etc.
+  item?: string; // "Thunder Stone", "Link Cable", etc.
+};
+
 export type PokemonDetails = {
   id: number;
   name: string;
@@ -19,6 +28,10 @@ export type PokemonDetails = {
   weight: number;
   abilities: string[];
   stats: PokemonStat[];
+  description: string;
+  category: string;
+  weaknesses: string[];
+  evolutionChain: EvolutionChain[];
 };
 
 export type PokemonType =
