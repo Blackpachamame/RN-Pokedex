@@ -107,7 +107,7 @@ export default function PokemonDetailScreen() {
         <ScrollView
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}>
-          {activeTab === "about" && <AboutTab pokemon={pokemon} />}
+          {activeTab === "about" && <AboutTab pokemon={pokemon} currentPokemonId={pokemon.id} />}
           {activeTab === "stats" && <StatsTab stats={pokemon.stats} color={accentColor} />}
           {activeTab === "moves" && <MovesPlaceholder />}
         </ScrollView>

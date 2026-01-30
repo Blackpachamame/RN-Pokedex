@@ -4,10 +4,17 @@ export const styles = StyleSheet.create({
   card: {
     padding: 16,
     borderRadius: 12,
-    // borderWidth: 1,
+    backgroundColor: "#F8FAFC",
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+
+    // Shadow
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 2,
   },
   number: {
     fontSize: 16,
@@ -35,6 +42,10 @@ export const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: 8,
     backgroundColor: "#ddd",
+  },
+  imageContainer: {
+    width: 80,
+    height: 80,
   },
   image: {
     width: "100%",

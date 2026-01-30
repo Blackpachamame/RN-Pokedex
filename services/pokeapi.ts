@@ -5,27 +5,46 @@ const api = axios.create({
   baseURL: "https://pokeapi.co/api/v2",
 });
 
-export async function fetchPokemonList(limit: number = 10): Promise<PokemonListItem[]> {
+/**
+ * OPTIMIZADO: Solo 1 request en lugar de N+1
+ * Usa URLs predecibles de PokeAPI para imágenes
+ */
+export async function fetchPokemonList(
+  limit: number = 20,
+  offset: number = 0,
+): Promise<PokemonListItem[]> {
   try {
-    const listResponse = await api.get(`/pokemon?limit=${limit}`);
+    const response = await api.get(`/pokemon?limit=${limit}&offset=${offset}`);
 
-    const pokemonDetails = await Promise.all(
-      listResponse.data.results.map(async (pokemon: any) => {
-        const detailResponse = await api.get(pokemon.url);
-        const data = detailResponse.data;
+    // Mapear directamente sin requests adicionales
+    return response.data.results.map((pokemon: any, index: number) => {
+      const pokemonId = offset + index + 1;
 
-        return {
-          id: data.id,
-          name: data.name,
-          image: data.sprites.other["official-artwork"].front_default,
-          types: data.types.map((t: any) => t.type.name),
-        };
-      }),
-    );
-
-    return pokemonDetails;
+      return {
+        id: pokemonId,
+        name: pokemon.name,
+        image: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemonId}.png`,
+        // Los tipos se cargan bajo demanda en el detalle
+        types: [],
+      };
+    });
   } catch (error) {
-    throw error;
+    console.error("Error fetching pokemon list:", error);
+    throw new Error("Failed to fetch Pokémon list");
+  }
+}
+
+/**
+ * Fetch tipos de un Pokémon específico (para usar opcionalmente)
+ * Útil si querés mostrar tipos en la lista después
+ */
+export async function fetchPokemonTypes(id: number): Promise<string[]> {
+  try {
+    const response = await api.get(`/pokemon/${id}`);
+    return response.data.types.map((t: any) => t.type.name);
+  } catch (error) {
+    console.error(`Error fetching types for pokemon ${id}:`, error);
+    return [];
   }
 }
 
@@ -50,7 +69,6 @@ export async function fetchPokemonById(id: number): Promise<PokemonDetails> {
     const category = genusEntry?.genus || "";
 
     const weaknesses = await fetchWeaknesses(data.types.map((t: any) => t.type.name));
-
     // Obtener cadena de evolución COMPLETA (incluyendo ramificaciones)
     const evolutionChain = await fetchEvolutionChain(speciesData.evolution_chain.url);
 
@@ -72,7 +90,8 @@ export async function fetchPokemonById(id: number): Promise<PokemonDetails> {
       evolutionChain,
     };
   } catch (error) {
-    throw error;
+    console.error(`Error fetching pokemon ${id}:`, error);
+    throw new Error(`Failed to fetch Pokémon #${id}`);
   }
 }
 
@@ -96,7 +115,7 @@ async function fetchWeaknesses(types: string[]): Promise<string[]> {
   }
 }
 
-// Helper mejorado para manejar evoluciones ramificadas
+// Helper para manejar evoluciones ramificadas
 async function fetchEvolutionChain(evolutionChainUrl: string): Promise<EvolutionChain[]> {
   try {
     const response = await axios.get(evolutionChainUrl);

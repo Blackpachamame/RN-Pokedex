@@ -13,8 +13,6 @@ type Props = {
 };
 
 export default function StatsTab({ stats, color }: Props) {
-  console.log(stats, color);
-
   return (
     <View style={styles.container}>
       {stats.map((stat) => (
