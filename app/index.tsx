@@ -2,7 +2,7 @@ import PokemonCard from "@/components/PokemonCard/PokemonCard";
 import { fetchPokemonList } from "@/services/pokeapi";
 import { PokemonListItem } from "@/types/pokemon";
 import { router } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -24,32 +24,25 @@ export default function Index() {
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
 
+  // Ref para bloqueo sincrónico
+  const isLoadingMoreRef = useRef(false);
   // Carga inicial
   useEffect(() => {
     loadPokemons();
   }, []);
 
-  // Función para cargar Pokémon
   const loadPokemons = async (isRefresh = false) => {
     try {
       if (isRefresh) {
         setRefreshing(true);
-        setOffset(0);
-        setHasMore(true);
       } else {
         setLoading(true);
       }
 
-      const data = await fetchPokemonList(ITEMS_PER_PAGE, isRefresh ? 0 : offset);
-
-      if (isRefresh) {
-        setPokemons(data);
-        setOffset(ITEMS_PER_PAGE);
-      } else {
-        setPokemons(data);
-        setOffset(ITEMS_PER_PAGE);
-      }
-
+      const data = await fetchPokemonList(ITEMS_PER_PAGE, 0);
+      setPokemons(data);
+      setOffset(ITEMS_PER_PAGE);
+      setHasMore(true);
       setError(null);
     } catch (err) {
       console.error(err);
@@ -62,10 +55,16 @@ export default function Index() {
 
   // Cargar más Pokémon (infinite scroll)
   const loadMore = async () => {
-    if (loadingMore || !hasMore || loading) return;
+    // Check con ref primero (sincrónico)
+    if (isLoadingMoreRef.current || loadingMore || !hasMore || loading || refreshing) {
+      return;
+    }
+
+    // Bloquear INMEDIATAMENTE
+    isLoadingMoreRef.current = true;
+    setLoadingMore(true);
 
     try {
-      setLoadingMore(true);
       const data = await fetchPokemonList(ITEMS_PER_PAGE, offset);
 
       if (data.length < ITEMS_PER_PAGE) {
@@ -79,6 +78,7 @@ export default function Index() {
       // No mostrar error en loadMore, solo en carga inicial
     } finally {
       setLoadingMore(false);
+      isLoadingMoreRef.current = false; // Desbloquear
     }
   };
 
@@ -161,7 +161,6 @@ const styles = StyleSheet.create({
   separator: {
     height: 16,
   },
-
   // Loading/Error states
   centerContainer: {
     flex: 1,
@@ -175,7 +174,6 @@ const styles = StyleSheet.create({
     color: "#64748B",
     fontWeight: "600",
   },
-
   // Error state
   errorEmoji: {
     fontSize: 64,
@@ -204,7 +202,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "700",
   },
-
   // Footer
   footerLoader: {
     flexDirection: "row",

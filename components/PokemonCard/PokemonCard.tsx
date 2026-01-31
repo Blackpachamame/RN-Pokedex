@@ -9,8 +9,6 @@ type Props = {
 };
 
 const PokemonCard = React.memo(({ pokemon }: Props) => {
-  console.log(pokemon.types);
-
   const formattedNumber = `#${pokemon.id.toString().padStart(4, "0")}`;
 
   return (

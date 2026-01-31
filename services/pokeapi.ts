@@ -16,15 +16,13 @@ export async function fetchPokemonList(
   try {
     const response = await api.get(`/pokemon?limit=${limit}&offset=${offset}`);
 
-    // Mapear directamente sin requests adicionales
-    return response.data.results.map((pokemon: any, index: number) => {
-      const pokemonId = offset + index + 1;
+    return response.data.results.map((pokemon: any) => {
+      const pokemonId = parseInt(pokemon.url.split("/").filter(Boolean).pop() || "0");
 
       return {
         id: pokemonId,
         name: pokemon.name,
         image: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemonId}.png`,
-        // Los tipos se cargan bajo demanda en el detalle
         types: [],
       };
     });
