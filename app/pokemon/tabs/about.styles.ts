@@ -5,6 +5,12 @@ const styles = StyleSheet.create({
     gap: 24,
     paddingBottom: 16,
   },
+
+  scrollContent: {
+    paddingTop: 32,
+    paddingHorizontal: 16,
+    paddingBottom: 32,
+  },
   separator: {
     height: 1,
     backgroundColor: "#E2E8F0",

@@ -4,9 +4,10 @@ import { PokemonDetails } from "@/types/pokemon";
 import { pokemonTypeColors } from "@/utils/pokemonColors";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, ScrollView, Text, View } from "react-native";
+import { ActivityIndicator, Text, View } from "react-native";
 import styles from "./styles";
 import AboutTab from "./tabs/AboutTab";
+import MovesTab from "./tabs/MovesTab";
 import PokemonTabs from "./tabs/PokemonTabs";
 import StatsTab from "./tabs/StatsTab";
 
@@ -104,25 +105,10 @@ export default function PokemonDetailScreen() {
 
       {/* Content */}
       <View style={styles.content}>
-        <ScrollView
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}>
-          {activeTab === "about" && <AboutTab pokemon={pokemon} currentPokemonId={pokemon.id} />}
-          {activeTab === "stats" && <StatsTab stats={pokemon.stats} color={accentColor} />}
-          {activeTab === "moves" && <MovesPlaceholder />}
-        </ScrollView>
+        {activeTab === "about" && <AboutTab pokemon={pokemon} currentPokemonId={pokemon.id} />}
+        {activeTab === "stats" && <StatsTab stats={pokemon.stats} color={accentColor} />}
+        {activeTab === "moves" && <MovesTab moves={pokemon.moves} />}
       </View>
-    </View>
-  );
-}
-
-function MovesPlaceholder() {
-  return (
-    <View style={{ padding: 32, alignItems: "center" }}>
-      <Text style={{ fontSize: 48, marginBottom: 8 }}>⚔️</Text>
-      <Text style={{ fontSize: 16, color: "#64748B", textAlign: "center" }}>
-        Moves list coming soon
-      </Text>
     </View>
   );
 }

@@ -4,6 +4,11 @@ const styles = StyleSheet.create({
   container: {
     gap: 16,
   },
+  scrollContent: {
+    paddingTop: 32,
+    paddingHorizontal: 16,
+    paddingBottom: 32,
+  },
   row: {
     flex: 1,
     flexDirection: "row",

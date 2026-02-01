@@ -1,7 +1,7 @@
 import { TypeBadge } from "@/components/TypeBadge/TypeBadge";
 import { EvolutionChain } from "@/types/pokemon";
 import { ArrowRight, LucideIcon, MoveVertical, Weight } from "lucide-react-native";
-import { Image, Text, View } from "react-native";
+import { Image, ScrollView, Text, View } from "react-native";
 import styles from "./about.styles";
 
 type Props = {
@@ -21,72 +21,74 @@ export default function AboutTab({ pokemon, currentPokemonId }: Props) {
   const { description, height, weight, abilities, category, weaknesses, evolutionChain } = pokemon;
 
   return (
-    <View style={styles.container}>
-      {/* Descripción */}
-      {description && (
-        <View style={styles.descriptionContainer}>
-          <Text style={styles.description}>{description}</Text>
-        </View>
-      )}
+    <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+      <View style={styles.container}>
+        {/* Descripción */}
+        {description && (
+          <View style={styles.descriptionContainer}>
+            <Text style={styles.description}>{description}</Text>
+          </View>
+        )}
 
-      {/* Pokédex Data Grid */}
-      <View style={styles.dataGrid}>
-        {/* Height y Weight en una fila */}
-        <View style={styles.gridRow}>
-          <DataCard label="Weight" value={`${(weight / 10).toFixed(1)} kg`} icon={Weight} />
-          <DataCard label="Height" value={`${(height / 10).toFixed(1)} m`} icon={MoveVertical} />
-        </View>
-      </View>
-      <View style={styles.separator} />
-      {/* Category */}
-      {category && (
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Category</Text>
-          <Text style={styles.categoryText}>{category}</Text>
-        </View>
-      )}
-      <View style={styles.separator} />
-      {/* Abilities */}
-      {abilities.length > 0 && (
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Abilities</Text>
-          <Text style={styles.abilitiesText}>
-            {abilities
-              .map((ability) =>
-                ability
-                  .split("-")
-                  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                  .join(" "),
-              )
-              .join(", ")}
-          </Text>
-        </View>
-      )}
-      <View style={styles.separator} />
-      {/* Weaknesses */}
-      {weaknesses.length > 0 && (
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Weaknesses</Text>
-          <View style={styles.weaknessesContainer}>
-            {weaknesses.map((weakness) => (
-              <TypeBadge key={weakness} type={weakness} extend={true} />
-            ))}
+        {/* Pokédex Data Grid */}
+        <View style={styles.dataGrid}>
+          {/* Height y Weight en una fila */}
+          <View style={styles.gridRow}>
+            <DataCard label="Weight" value={`${(weight / 10).toFixed(1)} kg`} icon={Weight} />
+            <DataCard label="Height" value={`${(height / 10).toFixed(1)} m`} icon={MoveVertical} />
           </View>
         </View>
-      )}
-
-      <View style={styles.separator} />
-      {/* Evolutions */}
-      {evolutionChain.length > 1 && (
-        <>
-          <View style={styles.separator} />
+        <View style={styles.separator} />
+        {/* Category */}
+        {category && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Evolution Chain</Text>
-            <EvolutionChainView evolutions={evolutionChain} currentPokemonId={currentPokemonId} />
+            <Text style={styles.sectionTitle}>Category</Text>
+            <Text style={styles.categoryText}>{category}</Text>
           </View>
-        </>
-      )}
-    </View>
+        )}
+        <View style={styles.separator} />
+        {/* Abilities */}
+        {abilities.length > 0 && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Abilities</Text>
+            <Text style={styles.abilitiesText}>
+              {abilities
+                .map((ability) =>
+                  ability
+                    .split("-")
+                    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                    .join(" "),
+                )
+                .join(", ")}
+            </Text>
+          </View>
+        )}
+        <View style={styles.separator} />
+        {/* Weaknesses */}
+        {weaknesses.length > 0 && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Weaknesses</Text>
+            <View style={styles.weaknessesContainer}>
+              {weaknesses.map((weakness) => (
+                <TypeBadge key={weakness} type={weakness} extend={true} />
+              ))}
+            </View>
+          </View>
+        )}
+
+        <View style={styles.separator} />
+        {/* Evolutions */}
+        {evolutionChain.length > 1 && (
+          <>
+            <View style={styles.separator} />
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Evolution Chain</Text>
+              <EvolutionChainView evolutions={evolutionChain} currentPokemonId={currentPokemonId} />
+            </View>
+          </>
+        )}
+      </View>
+    </ScrollView>
   );
 }
 

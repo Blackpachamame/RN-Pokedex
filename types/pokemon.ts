@@ -10,6 +10,17 @@ export type PokemonStat = {
   value: number;
 };
 
+export interface PokemonMove {
+  name: string;
+  type: string;
+  category: "physical" | "special" | "status";
+  power: number | null;
+  accuracy: number | null;
+  pp: number;
+  learnMethod: string;
+  levelLearnedAt: number | null;
+}
+
 export type EvolutionChain = {
   id: number;
   name: string;
@@ -32,6 +43,7 @@ export type PokemonDetails = {
   category: string;
   weaknesses: string[];
   evolutionChain: EvolutionChain[];
+  moves: PokemonMove[];
 };
 
 export type PokemonType =

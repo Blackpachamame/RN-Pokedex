@@ -26,12 +26,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
 
-  scrollContent: {
-    paddingTop: 32,
-    paddingHorizontal: 16,
-    paddingBottom: 32,
-  },
-
   invertedRadiusContainer: {
     position: "absolute",
     zIndex: 999,

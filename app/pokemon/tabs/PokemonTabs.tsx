@@ -20,7 +20,6 @@ type TabConfig = {
 const TABS: TabConfig[] = [
   { key: "about", label: "About", Icon: Info },
   { key: "stats", label: "Stats", Icon: BarChart3 },
-  // { key: "evolutions", label: "Evolution", Icon: GitBranch },
   { key: "moves", label: "Moves", Icon: Zap },
 ];
 

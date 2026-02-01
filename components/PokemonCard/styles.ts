@@ -21,14 +21,9 @@ export const styles = StyleSheet.create({
     fontWeight: "900",
     color: "rgba(0, 0, 0, 0.3)",
   },
-  container: {
-    height: 90,
-    justifyContent: "space-between",
-  },
   name: {
     fontSize: 24,
     fontWeight: "bold",
-    lineHeight: 24,
     color: "#26262b",
     textTransform: "capitalize",
   },

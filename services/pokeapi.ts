@@ -1,5 +1,5 @@
 import axios from "axios";
-import { EvolutionChain, PokemonDetails, PokemonListItem } from "../types/pokemon";
+import { EvolutionChain, PokemonDetails, PokemonListItem, PokemonMove } from "../types/pokemon";
 
 const api = axios.create({
   baseURL: "https://pokeapi.co/api/v2",
@@ -70,6 +70,8 @@ export async function fetchPokemonById(id: number): Promise<PokemonDetails> {
     // Obtener cadena de evolución COMPLETA (incluyendo ramificaciones)
     const evolutionChain = await fetchEvolutionChain(speciesData.evolution_chain.url);
 
+    const moves = await fetchMoves(data.moves);
+
     return {
       id: data.id,
       name: data.name,
@@ -86,6 +88,7 @@ export async function fetchPokemonById(id: number): Promise<PokemonDetails> {
       category,
       weaknesses,
       evolutionChain,
+      moves,
     };
   } catch (error) {
     console.error(`Error fetching pokemon ${id}:`, error);
@@ -152,6 +155,54 @@ async function fetchEvolutionChain(evolutionChainUrl: string): Promise<Evolution
     return evolutions;
   } catch (error) {
     console.error("Error fetching evolution chain:", error);
+    return [];
+  }
+}
+
+async function fetchMoves(movesData: any[]): Promise<PokemonMove[]> {
+  try {
+    // Limitar a los primeros 20 moves más relevantes (por level-up)
+    const levelUpMoves = movesData
+      .filter((m: any) =>
+        m.version_group_details.some((v: any) => v.move_learn_method.name === "level-up"),
+      )
+      .slice(0, 20);
+
+    // Fetch detalles de cada move
+    const movesPromises = levelUpMoves.map(async (moveData: any) => {
+      try {
+        const moveResponse = await api.get(moveData.move.url);
+        const move = moveResponse.data;
+
+        // Obtener el primer método de aprendizaje (level-up)
+        const versionDetail = moveData.version_group_details.find(
+          (v: any) => v.move_learn_method.name === "level-up",
+        );
+
+        return {
+          name: move.name,
+          type: move.type.name,
+          category: move.damage_class.name,
+          power: move.power,
+          accuracy: move.accuracy,
+          pp: move.pp,
+          learnMethod: versionDetail?.move_learn_method.name || "level-up",
+          levelLearnedAt: versionDetail?.level_learned_at || null,
+        };
+      } catch (err) {
+        console.error(`Error fetching move details:`, err);
+        return null;
+      }
+    });
+
+    const moves = await Promise.all(movesPromises);
+
+    // Filtrar nulls y ordenar por nivel
+    return moves
+      .filter((m): m is PokemonMove => m !== null)
+      .sort((a, b) => (a.levelLearnedAt || 0) - (b.levelLearnedAt || 0));
+  } catch (error) {
+    console.error("Error fetching moves:", error);
     return [];
   }
 }
