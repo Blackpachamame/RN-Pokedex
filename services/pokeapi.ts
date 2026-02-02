@@ -1,5 +1,11 @@
 import axios from "axios";
-import { EvolutionChain, PokemonDetails, PokemonListItem, PokemonMove } from "../types/pokemon";
+import {
+  EvolutionChain,
+  PokemonDetails,
+  PokemonIndexItem,
+  PokemonListItem,
+  PokemonMove,
+} from "../types/pokemon";
 
 const api = axios.create({
   baseURL: "https://pokeapi.co/api/v2",
@@ -204,5 +210,23 @@ async function fetchMoves(movesData: any[]): Promise<PokemonMove[]> {
   } catch (error) {
     console.error("Error fetching moves:", error);
     return [];
+  }
+}
+
+export async function fetchPokemonIndex(): Promise<PokemonIndexItem[]> {
+  try {
+    const response = await api.get(`/pokemon?limit=1300&offset=0`);
+
+    return response.data.results.map((pokemon: any) => {
+      const pokemonId = parseInt(pokemon.url.split("/").filter(Boolean).pop() || "0");
+
+      return {
+        id: pokemonId,
+        name: pokemon.name,
+      };
+    });
+  } catch (error) {
+    console.error("Error fetching pokemon list:", error);
+    throw new Error("Failed to fetch Pokémon index");
   }
 }

@@ -5,6 +5,11 @@ export type PokemonListItem = {
   types: string[];
 };
 
+export type PokemonIndexItem = {
+  id: number;
+  name: string;
+};
+
 export type PokemonStat = {
   name: string;
   value: number;
