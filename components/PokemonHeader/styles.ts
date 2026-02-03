@@ -3,7 +3,7 @@ import { StyleSheet } from "react-native";
 export const styles = StyleSheet.create({
   container: {
     height: 320,
-    paddingTop: 24, // base
+    paddingTop: 24,
     paddingHorizontal: 16,
     borderBottomLeftRadius: 24,
     borderBottomRightRadius: 24,
@@ -19,6 +19,8 @@ export const styles = StyleSheet.create({
     fontWeight: "800",
     color: "#fff",
     textTransform: "capitalize",
+    flex: 1,
+    marginRight: 12,
   },
 
   number: {
@@ -27,6 +29,7 @@ export const styles = StyleSheet.create({
     letterSpacing: 1,
     marginTop: 8,
     color: "rgba(255,255,255,0.6)",
+    flexShrink: 0,
   },
   backgroundIcon: {
     position: "absolute",

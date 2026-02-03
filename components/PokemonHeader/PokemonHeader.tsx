@@ -30,7 +30,9 @@ function PokemonHeader({ id, name, image, types }: PokemonHeaderProps) {
       />
 
       <View style={styles.topRow}>
-        <Text style={styles.name}>{name}</Text>
+        <Text numberOfLines={2} ellipsizeMode="tail" style={styles.name}>
+          {name}
+        </Text>
         <Text style={styles.number}>{formattedNumber}</Text>
       </View>
 

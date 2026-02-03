@@ -17,9 +17,11 @@ const PokemonCard = React.memo(({ pokemon }: Props) => {
       colors={["rgba(230, 230, 230, 1)", "rgba(255, 255, 255, 1)", "rgba(176, 176, 194, 1)"]}
       start={{ x: 0, y: 1 }}
       end={{ x: 1, y: 0 }}>
-      <View>
+      <View style={styles.textContainer}>
         <Text style={styles.number}>{formattedNumber}</Text>
-        <Text style={styles.name}>{pokemon.name}</Text>
+        <Text numberOfLines={1} ellipsizeMode="tail" style={styles.name}>
+          {pokemon.name}
+        </Text>
       </View>
 
       <View style={styles.imageContainer}>

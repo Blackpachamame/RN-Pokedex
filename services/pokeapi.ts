@@ -24,10 +24,11 @@ export async function fetchPokemonList(
 
     return response.data.results.map((pokemon: any) => {
       const pokemonId = parseInt(pokemon.url.split("/").filter(Boolean).pop() || "0");
+      const displayName = pokemon.name.replace(/-/g, " ");
 
       return {
         id: pokemonId,
-        name: pokemon.name,
+        name: displayName,
         image: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemonId}.png`,
         types: [],
       };
@@ -63,6 +64,7 @@ export async function fetchPokemonById(id: number): Promise<PokemonDetails> {
     const flavorTextEntry = speciesData.flavor_text_entries.find(
       (entry: any) => entry.language.name === "en",
     );
+    const displayName = data.name.replace(/-/g, " ");
     const description =
       flavorTextEntry?.flavor_text
         .replace(/[\n\f\r]/g, " ")
@@ -80,7 +82,7 @@ export async function fetchPokemonById(id: number): Promise<PokemonDetails> {
 
     return {
       id: data.id,
-      name: data.name,
+      name: displayName,
       image: data.sprites.other["official-artwork"].front_default,
       types: data.types.map((t: any) => t.type.name),
       height: data.height,
@@ -215,14 +217,15 @@ async function fetchMoves(movesData: any[]): Promise<PokemonMove[]> {
 
 export async function fetchPokemonIndex(): Promise<PokemonIndexItem[]> {
   try {
-    const response = await api.get(`/pokemon?limit=1300&offset=0`);
+    const response = await api.get(`/pokemon?limit=1025&offset=0`);
 
     return response.data.results.map((pokemon: any) => {
       const pokemonId = parseInt(pokemon.url.split("/").filter(Boolean).pop() || "0");
+      const displayName = pokemon.name.replace(/-/g, " ");
 
       return {
         id: pokemonId,
-        name: pokemon.name,
+        name: displayName,
       };
     });
   } catch (error) {

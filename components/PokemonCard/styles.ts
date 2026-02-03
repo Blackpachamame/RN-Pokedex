@@ -16,6 +16,10 @@ export const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 2,
   },
+  textContainer: {
+    flex: 1,
+    marginRight: 12,
+  },
   number: {
     fontSize: 16,
     fontWeight: "900",
@@ -41,6 +45,7 @@ export const styles = StyleSheet.create({
   imageContainer: {
     width: 80,
     height: 80,
+    flexShrink: 0,
   },
   image: {
     width: "100%",

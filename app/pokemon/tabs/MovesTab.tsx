@@ -1,6 +1,5 @@
 import MoveCard from "@/components/MoveCard/MoveCard";
 import { PokemonMove } from "@/types/pokemon";
-import React from "react";
 import { FlatList, Text, View } from "react-native";
 import styles from "./moves.styles";
 
