@@ -28,6 +28,7 @@ export default function SearchBar({ value, onChangeText }: Props) {
       </Svg>
 
       <TextInput
+        id="search"
         placeholder="Search Pokémon..."
         placeholderTextColor="#94A3B8"
         value={value}

@@ -2,6 +2,7 @@ import { PokemonListItem } from "@/types/pokemon";
 import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
 import { Image, Text, View } from "react-native";
+import { TypeBadge } from "../TypeBadge/TypeBadge";
 import { styles } from "./styles";
 
 type Props = {
@@ -18,10 +19,18 @@ const PokemonCard = React.memo(({ pokemon }: Props) => {
       start={{ x: 0, y: 1 }}
       end={{ x: 1, y: 0 }}>
       <View style={styles.textContainer}>
-        <Text style={styles.number}>{formattedNumber}</Text>
-        <Text numberOfLines={1} ellipsizeMode="tail" style={styles.name}>
-          {pokemon.name}
-        </Text>
+        <View>
+          <Text style={styles.number}>{formattedNumber}</Text>
+          <Text numberOfLines={1} ellipsizeMode="tail" style={styles.name}>
+            {pokemon.name}
+          </Text>
+
+          <View style={styles.typesContainer}>
+            {pokemon.types.map((type) => (
+              <TypeBadge key={type} type={type} variant="badge" />
+            ))}
+          </View>
+        </View>
       </View>
 
       <View style={styles.imageContainer}>

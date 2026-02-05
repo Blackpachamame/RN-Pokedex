@@ -39,7 +39,7 @@ function PokemonHeader({ id, name, image, types }: PokemonHeaderProps) {
       {/* Types */}
       <View style={styles.types}>
         {types.map((type) => (
-          <TypeBadge key={type} type={type} extend={true} />
+          <TypeBadge key={type} type={type} variant="badge" extend={true} />
         ))}
       </View>
 

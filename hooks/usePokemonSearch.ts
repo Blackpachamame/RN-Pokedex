@@ -1,12 +1,12 @@
 import { fetchPokemonList } from "@/services/pokeapi";
-import { PokemonIndexItem, PokemonListItem } from "@/types/pokemon";
+import { PokemonListIndex, PokemonListItem } from "@/types/pokemon";
 import { useEffect, useState } from "react";
 
 /**
  * Hook personalizado para manejar búsqueda de Pokémon
  * Separa la lógica de búsqueda del componente principal
  */
-export function usePokemonSearch(pokemonsIndex: PokemonIndexItem[]) {
+export function usePokemonSearch(pokemonsIndex: PokemonListIndex[]) {
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [searchResults, setSearchResults] = useState<PokemonListItem[]>([]);
@@ -36,13 +36,13 @@ export function usePokemonSearch(pokemonsIndex: PokemonIndexItem[]) {
 
         // Filtrar en el índice
         const matched = pokemonsIndex.filter(
-          (p) => p.name.includes(query) || p.id.toString().includes(query),
+          (p) => p.name.toLowerCase().includes(query) || p.id.toString().includes(query),
         );
 
-        // Limitar resultados
+        // Limitar a 50 resultados
         const limited = matched.slice(0, 50);
 
-        // Fetch en paralelo
+        // ✅ Fetch datos completos con tipos
         const results = await Promise.all(
           limited.map(async (p) => {
             try {

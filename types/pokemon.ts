@@ -5,9 +5,10 @@ export type PokemonListItem = {
   types: string[];
 };
 
-export type PokemonIndexItem = {
+export type PokemonListIndex = {
   id: number;
   name: string;
+  image?: string;
 };
 
 export type PokemonStat = {
@@ -31,8 +32,8 @@ export type EvolutionChain = {
   name: string;
   image: string;
   minLevel: number | null;
-  method?: string; // "Level Up", "Stone", "Trade", etc.
-  item?: string; // "Thunder Stone", "Link Cable", etc.
+  method?: string;
+  item?: string;
 };
 
 export type PokemonDetails = {

@@ -2,45 +2,37 @@ import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
   card: {
-    padding: 16,
-    borderRadius: 12,
-    backgroundColor: "#F8FAFC",
     flexDirection: "row",
-    justifyContent: "space-between",
+    backgroundColor: "white",
+    borderRadius: 16,
+    padding: 16,
     alignItems: "center",
-
-    // Shadow
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    elevation: 2,
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   textContainer: {
     flex: 1,
-    marginRight: 12,
+    gap: 4,
   },
   number: {
-    fontSize: 16,
-    fontWeight: "900",
-    color: "rgba(0, 0, 0, 0.3)",
+    fontSize: 12,
+    fontWeight: "700",
+    color: "#94A3B8",
+    letterSpacing: 0.5,
   },
   name: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#26262b",
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#1E293B",
     textTransform: "capitalize",
   },
-  types: {
+  typesContainer: {
     flexDirection: "row",
     gap: 6,
-  },
-  type: {
-    fontSize: 12,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
-    backgroundColor: "#ddd",
+    marginTop: 4,
   },
   imageContainer: {
     width: 80,

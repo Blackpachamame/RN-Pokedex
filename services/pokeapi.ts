@@ -1,26 +1,54 @@
 import axios from "axios";
-import {
-  EvolutionChain,
-  PokemonDetails,
-  PokemonIndexItem,
-  PokemonListItem,
-  PokemonMove,
-} from "../types/pokemon";
+import { EvolutionChain, PokemonDetails, PokemonListItem, PokemonMove } from "../types/pokemon";
 
 const api = axios.create({
   baseURL: "https://pokeapi.co/api/v2",
 });
 
 /**
- * OPTIMIZADO: Solo 1 request en lugar de N+1
- * Usa URLs predecibles de PokeAPI para imágenes
+ * Lista paginada CON tipos (para mostrar)
+ * Hace N requests en paralelo pero trae data completa para cards
  */
 export async function fetchPokemonList(
   limit: number = 20,
   offset: number = 0,
 ): Promise<PokemonListItem[]> {
   try {
-    const response = await api.get(`/pokemon?limit=${limit}&offset=${offset}`);
+    const listResponse = await api.get(`/pokemon?limit=${limit}&offset=${offset}`);
+
+    const pokemonDetails = await Promise.all(
+      listResponse.data.results.map(async (pokemon: any) => {
+        try {
+          const detailResponse = await api.get(pokemon.url);
+          const data = detailResponse.data;
+          const displayName = data.name.replace(/-/g, " ");
+
+          return {
+            id: data.id,
+            name: displayName,
+            image: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${data.id}.png`,
+            types: data.types.map((t: any) => t.type.name),
+          };
+        } catch (err) {
+          console.error(`Error fetching pokemon:`, err);
+          return null;
+        }
+      }),
+    );
+
+    return pokemonDetails.filter((p): p is PokemonListItem => p !== null);
+  } catch (error) {
+    console.error("Error fetching pokemon list:", error);
+    throw new Error("Failed to fetch Pokémon list");
+  }
+}
+
+/**
+ * Índice completo LIGERO (para búsqueda/filtros)
+ */
+export async function fetchPokemonIndex(): Promise<{ id: number; name: string; image: string }[]> {
+  try {
+    const response = await api.get(`/pokemon?limit=1025&offset=0`);
 
     return response.data.results.map((pokemon: any) => {
       const pokemonId = parseInt(pokemon.url.split("/").filter(Boolean).pop() || "0");
@@ -30,26 +58,40 @@ export async function fetchPokemonList(
         id: pokemonId,
         name: displayName,
         image: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemonId}.png`,
-        types: [],
       };
     });
   } catch (error) {
-    console.error("Error fetching pokemon list:", error);
-    throw new Error("Failed to fetch Pokémon list");
+    console.error("Error fetching pokemon index:", error);
+    throw new Error("Failed to fetch Pokémon index");
   }
 }
 
 /**
- * Fetch tipos de un Pokémon específico (para usar opcionalmente)
- * Útil si querés mostrar tipos en la lista después
+ * Índice por tipo (para filtros)
+ * Retorna solo id y name (ligero)
  */
-export async function fetchPokemonTypes(id: number): Promise<string[]> {
+export async function fetchPokemonsByType(typeId: number): Promise<{ id: number; name: string }[]> {
   try {
-    const response = await api.get(`/pokemon/${id}`);
-    return response.data.types.map((t: any) => t.type.name);
+    const response = await api.get(`/type/${typeId}`);
+
+    const pokemonList = response.data.pokemon
+      .map((entry: any) => {
+        const url = entry.pokemon.url;
+        const pokemonId = parseInt(url.split("/").filter(Boolean).pop() || "0");
+        const displayName = entry.pokemon.name.replace(/-/g, " ");
+
+        return {
+          id: pokemonId,
+          name: displayName,
+        };
+      })
+      .filter((p: any) => p.id <= 1025)
+      .sort((a: any, b: any) => a.id - b.id);
+
+    return pokemonList;
   } catch (error) {
-    console.error(`Error fetching types for pokemon ${id}:`, error);
-    return [];
+    console.error(`Error fetching pokemon for type ${typeId}:`, error);
+    throw new Error(`Failed to fetch Pokémon of type ${typeId}`);
   }
 }
 
@@ -75,9 +117,7 @@ export async function fetchPokemonById(id: number): Promise<PokemonDetails> {
     const category = genusEntry?.genus || "";
 
     const weaknesses = await fetchWeaknesses(data.types.map((t: any) => t.type.name));
-    // Obtener cadena de evolución COMPLETA (incluyendo ramificaciones)
     const evolutionChain = await fetchEvolutionChain(speciesData.evolution_chain.url);
-
     const moves = await fetchMoves(data.moves);
 
     return {
@@ -124,7 +164,6 @@ async function fetchWeaknesses(types: string[]): Promise<string[]> {
   }
 }
 
-// Helper para manejar evoluciones ramificadas
 async function fetchEvolutionChain(evolutionChainUrl: string): Promise<EvolutionChain[]> {
   try {
     const response = await axios.get(evolutionChainUrl);
@@ -132,10 +171,9 @@ async function fetchEvolutionChain(evolutionChainUrl: string): Promise<Evolution
 
     const evolutions: EvolutionChain[] = [];
 
-    // Función recursiva que maneja múltiples ramas
     const processChain = async (chainLink: any, level: number = 0) => {
       const speciesUrl = chainLink.species.url;
-      const speciesId = parseInt(speciesUrl.split("/").filter(Boolean).pop());
+      const speciesId = parseInt(speciesUrl.split("/").filter(Boolean).pop() || "0");
 
       const pokemonResponse = await api.get(`/pokemon/${speciesId}`);
       const pokemonData = pokemonResponse.data;
@@ -150,9 +188,7 @@ async function fetchEvolutionChain(evolutionChainUrl: string): Promise<Evolution
         minLevel,
       });
 
-      // Procesar TODAS las ramas de evolución
       if (chainLink.evolves_to && chainLink.evolves_to.length > 0) {
-        // Si hay múltiples ramas (como Eevee), procesarlas todas
         for (const evolution of chainLink.evolves_to) {
           await processChain(evolution, level + 1);
         }
@@ -169,20 +205,17 @@ async function fetchEvolutionChain(evolutionChainUrl: string): Promise<Evolution
 
 async function fetchMoves(movesData: any[]): Promise<PokemonMove[]> {
   try {
-    // Limitar a los primeros 20 moves más relevantes (por level-up)
     const levelUpMoves = movesData
       .filter((m: any) =>
         m.version_group_details.some((v: any) => v.move_learn_method.name === "level-up"),
       )
       .slice(0, 20);
 
-    // Fetch detalles de cada move
     const movesPromises = levelUpMoves.map(async (moveData: any) => {
       try {
         const moveResponse = await api.get(moveData.move.url);
         const move = moveResponse.data;
 
-        // Obtener el primer método de aprendizaje (level-up)
         const versionDetail = moveData.version_group_details.find(
           (v: any) => v.move_learn_method.name === "level-up",
         );
@@ -205,31 +238,11 @@ async function fetchMoves(movesData: any[]): Promise<PokemonMove[]> {
 
     const moves = await Promise.all(movesPromises);
 
-    // Filtrar nulls y ordenar por nivel
     return moves
       .filter((m): m is PokemonMove => m !== null)
       .sort((a, b) => (a.levelLearnedAt || 0) - (b.levelLearnedAt || 0));
   } catch (error) {
     console.error("Error fetching moves:", error);
     return [];
-  }
-}
-
-export async function fetchPokemonIndex(): Promise<PokemonIndexItem[]> {
-  try {
-    const response = await api.get(`/pokemon?limit=1025&offset=0`);
-
-    return response.data.results.map((pokemon: any) => {
-      const pokemonId = parseInt(pokemon.url.split("/").filter(Boolean).pop() || "0");
-      const displayName = pokemon.name.replace(/-/g, " ");
-
-      return {
-        id: pokemonId,
-        name: displayName,
-      };
-    });
-  } catch (error) {
-    console.error("Error fetching pokemon list:", error);
-    throw new Error("Failed to fetch Pokémon index");
   }
 }

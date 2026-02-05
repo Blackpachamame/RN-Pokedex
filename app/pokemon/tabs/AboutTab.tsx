@@ -70,7 +70,7 @@ export default function AboutTab({ pokemon, currentPokemonId }: Props) {
             <Text style={styles.sectionTitle}>Weaknesses</Text>
             <View style={styles.weaknessesContainer}>
               {weaknesses.map((weakness) => (
-                <TypeBadge key={weakness} type={weakness} extend={true} />
+                <TypeBadge key={weakness} type={weakness} variant="badge" extend={true} />
               ))}
             </View>
           </View>
