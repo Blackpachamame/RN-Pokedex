@@ -28,7 +28,6 @@ export default function SearchBar({ value, onChangeText }: Props) {
       </Svg>
 
       <TextInput
-        id="search"
         placeholder="Search Pokémon..."
         placeholderTextColor="#94A3B8"
         value={value}
@@ -39,6 +38,9 @@ export default function SearchBar({ value, onChangeText }: Props) {
         autoCapitalize="none"
         returnKeyType="search"
         style={styles.input}
+        // ✅ Evitar que el TextInput se resetee en re-renders
+        textContentType="none"
+        importantForAutofill="no"
       />
 
       {/* Clear Button */}
@@ -66,7 +68,6 @@ const styles = StyleSheet.create({
     gap: 12,
     borderWidth: 2,
     borderColor: "transparent",
-    // Subtle shadow
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,

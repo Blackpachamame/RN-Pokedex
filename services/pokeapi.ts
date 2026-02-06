@@ -44,7 +44,7 @@ export async function fetchPokemonList(
 }
 
 /**
- * Índice completo LIGERO (para búsqueda/filtros)
+ * Índice ligero (para búsqueda/filtros)
  */
 export async function fetchPokemonIndex(): Promise<{ id: number; name: string; image: string }[]> {
   try {
@@ -92,6 +92,28 @@ export async function fetchPokemonsByType(typeId: number): Promise<{ id: number;
   } catch (error) {
     console.error(`Error fetching pokemon for type ${typeId}:`, error);
     throw new Error(`Failed to fetch Pokémon of type ${typeId}`);
+  }
+}
+
+/**
+ * Fetch un Pokémon específico por ID (versión ligera)
+ * Usado para búsqueda y filtros por tipo
+ * Trae directamente por ID, no por posición
+ */
+export async function fetchPokemonByIdLight(id: number): Promise<PokemonListItem | null> {
+  try {
+    const response = await api.get(`/pokemon/${id}`);
+    const data = response.data;
+
+    return {
+      id: data.id,
+      name: data.name.replace(/-/g, " "),
+      image: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`,
+      types: data.types.map((t: any) => t.type.name),
+    };
+  } catch (error) {
+    console.error(`Error fetching pokemon ${id}:`, error);
+    return null;
   }
 }
 
