@@ -16,7 +16,7 @@ export function usePokemonSearch(pokemonsIndex: PokemonListIndex[]) {
 
   const currentSearchRef = useRef<string>("");
   const filteredIdsRef = useRef<number[]>([]);
-  const loadedCountRef = useRef(0); // ✅ Ref para rastrear cuántos hemos cargado
+  const loadedCountRef = useRef(0); // Ref para rastrear cuántos hemos cargado
 
   // Debounce
   useEffect(() => {
@@ -51,9 +51,7 @@ export function usePokemonSearch(pokemonsIndex: PokemonListIndex[]) {
         );
 
         filteredIdsRef.current = matched.map((p) => p.id);
-        loadedCountRef.current = 0; // ✅ Reset
-
-        console.log(`🔍 Found ${filteredIdsRef.current.length} matches for "${query}"`);
+        loadedCountRef.current = 0; // Reset
 
         // Cargar solo los primeros 20
         const idsToLoad = filteredIdsRef.current.slice(0, ITEMS_PER_BATCH);
@@ -72,9 +70,8 @@ export function usePokemonSearch(pokemonsIndex: PokemonListIndex[]) {
         if (currentSearchRef.current === queryToSearch) {
           const validResults = results.filter((r): r is PokemonListItem => r !== null);
           setSearchResults(validResults);
-          loadedCountRef.current = validResults.length; // ✅ Actualizar ref
+          loadedCountRef.current = validResults.length; // Actualizar ref
           setSearchLoading(false);
-          console.log(`✅ Showing ${validResults.length}/${filteredIdsRef.current.length}`);
         }
       } catch (e) {
         console.error(e);
@@ -89,11 +86,11 @@ export function usePokemonSearch(pokemonsIndex: PokemonListIndex[]) {
     runSearch();
   }, [debouncedQuery, pokemonsIndex]);
 
-  // ✅ Función para cargar más resultados
+  // Función para cargar más resultados
   const loadMoreSearch = async () => {
     if (searchLoading) return;
 
-    // ✅ Usar loadedCountRef
+    // Usar loadedCountRef
     const currentCount = loadedCountRef.current;
 
     if (currentCount >= filteredIdsRef.current.length) return;
@@ -101,10 +98,6 @@ export function usePokemonSearch(pokemonsIndex: PokemonListIndex[]) {
     setSearchLoading(true);
 
     try {
-      console.log(
-        `📥 Loading more search results... (${currentCount}/${filteredIdsRef.current.length})`,
-      );
-
       const nextIds = filteredIdsRef.current.slice(
         searchResults.length,
         searchResults.length + ITEMS_PER_BATCH,
@@ -126,12 +119,12 @@ export function usePokemonSearch(pokemonsIndex: PokemonListIndex[]) {
       setSearchResults((prev) => {
         const allResults = [...prev, ...validResults];
 
-        // ✅ Eliminamos duplicados por ID antes de guardar
+        // Eliminamos duplicados por ID antes de guardar
         const uniqueMap = new Map();
         allResults.forEach((p) => uniqueMap.set(p.id, p));
         const unique = Array.from(uniqueMap.values());
 
-        loadedCountRef.current = unique.length; // ✅ Mantenemos el ref sincronizado
+        loadedCountRef.current = unique.length; // Mantenemos el ref sincronizado
         return unique;
       });
     } catch (e) {
@@ -141,7 +134,7 @@ export function usePokemonSearch(pokemonsIndex: PokemonListIndex[]) {
     }
   };
 
-  // ✅ Usar loadedCountRef
+  // Usar loadedCountRef
   const hasMoreSearch = loadedCountRef.current < filteredIdsRef.current.length;
 
   const clearSearch = () => {

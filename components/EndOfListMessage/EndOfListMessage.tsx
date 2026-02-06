@@ -4,7 +4,6 @@ export const EndOfListMessage = () => (
   <View style={styles.container}>
     <Text style={styles.emoji}>✨</Text>
     <Text style={styles.text}>You`ve reached the end!</Text>
-    <Text style={styles.subtext}>All 1025 Pokémon loaded</Text>
   </View>
 );
 

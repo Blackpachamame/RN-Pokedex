@@ -17,7 +17,7 @@ export function useTypeFilter(selectedTypes: string[]) {
   const hasActiveFilters = selectedTypes.length > 0;
   const filteredIdsRef = useRef<number[]>([]);
   const isLoadingRef = useRef(false);
-  const loadedCountRef = useRef(0); // ✅ Ref para rastrear cuántos hemos cargado
+  const loadedCountRef = useRef(0); // Ref para rastrear cuántos hemos cargado
 
   // Cargar índice completo la primera vez
   useEffect(() => {
@@ -26,8 +26,6 @@ export function useTypeFilter(selectedTypes: string[]) {
     const loadTypeIndex = async () => {
       setIndexLoading(true);
       try {
-        console.log("🔄 Loading type index...");
-
         const typePromises = Object.entries(POKEMON_TYPE_IDS).map(async ([typeName, typeId]) => {
           try {
             const pokemonList = await fetchPokemonsByType(typeId);
@@ -49,7 +47,6 @@ export function useTypeFilter(selectedTypes: string[]) {
         );
 
         setTypeIndex(index);
-        console.log("✅ Type index loaded");
       } catch (err) {
         console.error("Error loading type index:", err);
       } finally {
@@ -66,7 +63,7 @@ export function useTypeFilter(selectedTypes: string[]) {
     if (selectedTypes.length === 0) {
       setTypeResults([]);
       filteredIdsRef.current = [];
-      loadedCountRef.current = 0; // ✅ Reset
+      loadedCountRef.current = 0; // Reset
       return;
     }
 
@@ -85,9 +82,7 @@ export function useTypeFilter(selectedTypes: string[]) {
 
         const sortedIds = Array.from(combinedIds).sort((a, b) => a - b);
         filteredIdsRef.current = sortedIds;
-        loadedCountRef.current = 0; // ✅ Reset al cambiar tipos
-
-        console.log(`📊 Total ${sortedIds.length} Pokémon for ${selectedTypes.join(" + ")}`);
+        loadedCountRef.current = 0; // Reset al cambiar tipos
 
         // Cargar solo los primeros 20
         const firstBatch = sortedIds.slice(0, ITEMS_PER_BATCH);
@@ -105,8 +100,7 @@ export function useTypeFilter(selectedTypes: string[]) {
 
         const validResults = results.filter((r): r is PokemonListItem => r !== null);
         setTypeResults(validResults);
-        loadedCountRef.current = validResults.length; // ✅ Actualizar ref
-        console.log(`✅ Showing ${validResults.length}/${sortedIds.length}`);
+        loadedCountRef.current = validResults.length; // Actualizar ref
       } catch (e) {
         console.error(e);
         setTypeResults([]);
@@ -119,18 +113,16 @@ export function useTypeFilter(selectedTypes: string[]) {
     loadFilteredPokemon();
   }, [selectedTypes, typeIndex]);
 
-  // ✅ Función para cargar más resultados
+  // Función para cargar más resultados
   const loadMoreFiltered = async () => {
     if (isLoadingRef.current || typeLoading) {
-      console.log("⏸️ Already loading...");
       return;
     }
 
-    // ✅ Usar loadedCountRef en lugar de typeResults.length
+    // Usar loadedCountRef en lugar de typeResults.length
     const currentCount = loadedCountRef.current;
 
     if (currentCount >= filteredIdsRef.current.length) {
-      console.log("✋ No more to load");
       return;
     }
 
@@ -138,15 +130,9 @@ export function useTypeFilter(selectedTypes: string[]) {
     setTypeLoading(true);
 
     try {
-      console.log(`📥 Loading more... (${currentCount}/${filteredIdsRef.current.length})`);
-
       const nextIds = filteredIdsRef.current.slice(
         typeResults.length,
         typeResults.length + ITEMS_PER_BATCH,
-      );
-
-      console.log(
-        `🔄 Fetching ${nextIds.length} Pokémon (IDs: ${nextIds.slice(0, 3).join(", ")}...)`,
       );
 
       const results = await Promise.all(
@@ -171,7 +157,6 @@ export function useTypeFilter(selectedTypes: string[]) {
         const unique = Array.from(uniqueMap.values());
 
         loadedCountRef.current = unique.length; // Sincronizar el ref con la data real única
-        console.log(`✅ Now showing ${unique.length}/${filteredIdsRef.current.length} (unique)`);
         return unique;
       });
     } catch (e) {
@@ -182,7 +167,7 @@ export function useTypeFilter(selectedTypes: string[]) {
     }
   };
 
-  // ✅ Usar loadedCountRef
+  // Usar loadedCountRef
   const hasMoreFiltered = loadedCountRef.current < filteredIdsRef.current.length;
 
   return {

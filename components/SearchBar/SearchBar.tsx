@@ -38,7 +38,7 @@ export default function SearchBar({ value, onChangeText }: Props) {
         autoCapitalize="none"
         returnKeyType="search"
         style={styles.input}
-        // ✅ Evitar que el TextInput se resetee en re-renders
+        // Evitar que el TextInput se resetee en re-renders
         textContentType="none"
         importantForAutofill="no"
       />

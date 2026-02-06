@@ -1,4 +1,5 @@
 import { PokemonListItem } from "@/types/pokemon";
+import { getMultiTypeGradient } from "@/utils/color";
 import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
 import { Image, Text, View } from "react-native";
@@ -11,11 +12,12 @@ type Props = {
 
 const PokemonCard = React.memo(({ pokemon }: Props) => {
   const formattedNumber = `#${pokemon.id.toString().padStart(4, "0")}`;
+  const typeGradient = getMultiTypeGradient(pokemon.types);
 
   return (
     <LinearGradient
       style={styles.card}
-      colors={["rgba(230, 230, 230, 1)", "rgba(255, 255, 255, 1)", "rgba(176, 176, 194, 1)"]}
+      colors={["rgba(230, 230, 230, 1)", "rgba(255, 255, 255, 1)", typeGradient[0]]}
       start={{ x: 0, y: 1 }}
       end={{ x: 1, y: 0 }}>
       <View style={styles.textContainer}>

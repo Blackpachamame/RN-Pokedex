@@ -1,13 +1,14 @@
 import {
   ErrorState,
   LoadingMoreFooter,
-  LoadingState,
   NoResultsState,
   SearchingState,
 } from "@/components/EmptyStates/EmptyStates";
 import { EndOfListMessage } from "@/components/EndOfListMessage/EndOfListMessage";
 import PokemonCard from "@/components/PokemonCard/PokemonCard";
 import SearchBar from "@/components/SearchBar/SearchBar";
+import { SkeletonList } from "@/components/Skeletons/SkeletonList";
+import { SkeletonTypeFilters } from "@/components/Skeletons/SkeletonTypeFilters";
 import { TypeFilters } from "@/components/TypeFilters/TypeFilters";
 import { usePokemonList } from "@/hooks/usePokemonList";
 import { usePokemonSearch } from "@/hooks/usePokemonSearch";
@@ -82,30 +83,13 @@ export default function Index() {
       data = searchResults;
     } else if (hasActiveFilters) {
       data = typeResults;
-      console.log(`🎯 typeResults from hook: ${typeResults.length} items`);
     } else {
       data = pokemons;
     }
 
-    console.log(`📦 Data before dedup: ${data.length} items`);
-    console.log(
-      "IDs en data:",
-      data.map((p) => p.id),
-    );
-    // Eliminar duplicados
     const uniqueMap = new Map();
     data.forEach((p) => uniqueMap.set(p.id, p));
     const unique = Array.from(uniqueMap.values());
-
-    console.log(`✨ Data after dedup: ${unique.length} items`);
-    if (hasActiveFilters) {
-      console.log(
-        `🔢 First 10 IDs: ${unique
-          .slice(0, 10)
-          .map((p) => p.id)
-          .join(", ")}`,
-      );
-    }
 
     return {
       dataToRender: unique,
@@ -128,7 +112,6 @@ export default function Index() {
   ]);
 
   const handleLoadMore = useCallback(() => {
-    console.log(`⬇️ Scroll reached end. canLoadMore: ${canLoadMore}`);
     if (isSearching && hasActiveFilters) return;
     if (isSearching) loadMoreSearch();
     else if (hasActiveFilters) loadMoreFiltered();
@@ -136,16 +119,13 @@ export default function Index() {
   }, [isSearching, hasActiveFilters, loadMoreSearch, loadMoreFiltered, loadMore]);
 
   const canLoadMore = useMemo(() => {
-    const can =
-      isSearching && hasActiveFilters
-        ? false
-        : isSearching
-          ? hasMoreSearch
-          : hasActiveFilters
-            ? hasMoreFiltered
-            : hasMore;
-    console.log(`🚦 canLoadMore: ${can}, hasMoreFiltered: ${hasMoreFiltered}`);
-    return can;
+    return isSearching && hasActiveFilters
+      ? false
+      : isSearching
+        ? hasMoreSearch
+        : hasActiveFilters
+          ? hasMoreFiltered
+          : hasMore;
   }, [isSearching, hasActiveFilters, hasMoreSearch, hasMoreFiltered, hasMore]);
 
   const isLoadingMore = useMemo(() => {
@@ -171,7 +151,18 @@ export default function Index() {
     return false;
   }, [isSearching, hasActiveFilters, searchLoading, typeLoading, searchResults, typeResults]);
 
-  if (loading && pokemons.length === 0) return <LoadingState />;
+  if (loading && pokemons.length === 0) {
+    return (
+      <View style={styles.skeletonContainer}>
+        <View style={styles.listContainer}>
+          <SearchBar value="" onChangeText={() => {}} />
+          <SkeletonTypeFilters />
+          <SkeletonList count={8} />
+        </View>
+      </View>
+    );
+  }
+
   if (error && pokemons.length === 0) return <ErrorState error={error} onRetry={refresh} />;
 
   return (
@@ -186,7 +177,9 @@ export default function Index() {
       ListHeaderComponent={
         <>
           <SearchBar value={searchQuery} onChangeText={setSearchQuery} />
-          {!indexLoading && (
+          {indexLoading ? (
+            <SkeletonTypeFilters />
+          ) : (
             <TypeFilters selectedTypes={selectedTypes} onTypeToggle={handleTypeToggle} />
           )}
           {(isSearching || hasActiveFilters) && dataToRender.length > 0 && (
@@ -235,8 +228,17 @@ const renderItem = ({ item }: { item: any }) => (
 );
 
 const styles = StyleSheet.create({
-  listContainer: { padding: 16, paddingBottom: 32 },
-  separator: { height: 16 },
+  skeletonContainer: {
+    flex: 1,
+    backgroundColor: "#fff",
+  },
+  listContainer: {
+    padding: 16,
+    paddingBottom: 32,
+  },
+  separator: {
+    height: 16,
+  },
   resultCounter: {
     paddingVertical: 8,
     paddingHorizontal: 16,

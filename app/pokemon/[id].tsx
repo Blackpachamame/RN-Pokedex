@@ -27,7 +27,7 @@ export default function PokemonDetailScreen() {
         setPokemon(data);
       } catch (err) {
         console.log(err);
-        setError("Error cargando el Pokémon");
+        setError("Error loading the Pokémon");
       } finally {
         setLoading(false);
       }
