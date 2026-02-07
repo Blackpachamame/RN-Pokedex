@@ -1,6 +1,6 @@
 import { TypeBadge } from "@/components/TypeBadge/TypeBadge";
 import { EvolutionChain } from "@/types/pokemon";
-import { ArrowRight, LucideIcon, MoveVertical, Weight } from "lucide-react-native";
+import { ArrowDown, GitBranch, LucideIcon, MoveVertical, Weight } from "lucide-react-native";
 import { Image, ScrollView, Text, View } from "react-native";
 import styles from "./about.styles";
 
@@ -32,13 +32,13 @@ export default function AboutTab({ pokemon, currentPokemonId }: Props) {
 
         {/* Pokédex Data Grid */}
         <View style={styles.dataGrid}>
-          {/* Height y Weight en una fila */}
           <View style={styles.gridRow}>
             <DataCard label="Weight" value={`${(weight / 10).toFixed(1)} kg`} icon={Weight} />
             <DataCard label="Height" value={`${(height / 10).toFixed(1)} m`} icon={MoveVertical} />
           </View>
         </View>
         <View style={styles.separator} />
+
         {/* Category */}
         {category && (
           <View style={styles.section}>
@@ -47,6 +47,7 @@ export default function AboutTab({ pokemon, currentPokemonId }: Props) {
           </View>
         )}
         <View style={styles.separator} />
+
         {/* Abilities */}
         {abilities.length > 0 && (
           <View style={styles.section}>
@@ -64,6 +65,7 @@ export default function AboutTab({ pokemon, currentPokemonId }: Props) {
           </View>
         )}
         <View style={styles.separator} />
+
         {/* Weaknesses */}
         {weaknesses.length > 0 && (
           <View style={styles.section}>
@@ -76,7 +78,6 @@ export default function AboutTab({ pokemon, currentPokemonId }: Props) {
           </View>
         )}
 
-        <View style={styles.separator} />
         {/* Evolutions */}
         {evolutionChain.length > 1 && (
           <>
@@ -123,46 +124,115 @@ function EvolutionChainView({
   evolutions: EvolutionChain[];
   currentPokemonId: number;
 }) {
+  const evolutionCount = evolutions.length;
+
+  // Layout 1: Vertical (1-3 evoluciones)
+  if (evolutionCount <= 3) {
+    return <SimpleEvolution evolutions={evolutions} currentPokemonId={currentPokemonId} />;
+  }
+
+  // Layout 2: Branched (4+ evoluciones)
+  return <BranchedEvolution evolutions={evolutions} currentPokemonId={currentPokemonId} />;
+}
+
+// Layout 1: Simple vertical (1-3 evoluciones)
+function SimpleEvolution({
+  evolutions,
+  currentPokemonId,
+}: {
+  evolutions: EvolutionChain[];
+  currentPokemonId: number;
+}) {
   return (
-    <View style={styles.evolutionChain}>
+    <View style={styles.simpleContainer}>
       {evolutions.map((evolution, index) => {
-        const isCurrentPokemon = evolution.id === currentPokemonId;
-        const isLastItem = index === evolutions.length - 1;
+        const isCurrent = evolution.id === currentPokemonId;
+        const isLast = index === evolutions.length - 1;
 
         return (
-          <View key={evolution.id} style={styles.evolutionRow}>
-            {/* Card de evolución */}
-            <View style={[styles.evolutionCard, isCurrentPokemon && styles.evolutionCardCurrent]}>
-              {/* Imagen */}
-              <Image
-                source={{ uri: evolution.image }}
-                style={styles.evolutionImage}
-                resizeMode="contain"
-              />
-
-              {/* Info */}
-              <View style={styles.evolutionInfo}>
-                <Text style={styles.evolutionNumber}>
-                  #{evolution.id.toString().padStart(3, "0")}
-                </Text>
-                <Text style={styles.evolutionName}>
-                  {evolution.name.charAt(0).toUpperCase() + evolution.name.slice(1)}
-                </Text>
-                {evolution.minLevel && (
-                  <Text style={styles.evolutionLevel}>Lv. {evolution.minLevel}</Text>
-                )}
-              </View>
-            </View>
-
-            {/* Flecha (excepto en el último) */}
-            {!isLastItem && (
-              <View style={styles.evolutionArrow}>
-                <ArrowRight size={24} color="#94A3B8" strokeWidth={2.5} />
+          <View key={evolution.id} style={styles.simpleContainer}>
+            <EvolutionCardVertical evolution={evolution} isCurrent={isCurrent} />
+            {!isLast && (
+              <View style={styles.downArrowContainer}>
+                <ArrowDown size={24} color="#CBD5E1" strokeWidth={2.5} />
               </View>
             )}
           </View>
         );
       })}
+    </View>
+  );
+}
+
+// Layout 2: Branched (Eevee, Tyrogue)
+function BranchedEvolution({
+  evolutions,
+  currentPokemonId,
+}: {
+  evolutions: EvolutionChain[];
+  currentPokemonId: number;
+}) {
+  const baseEvolution = evolutions[0];
+  const branchedEvolutions = evolutions.slice(1);
+
+  return (
+    <View style={styles.branchedContainer}>
+      {/* Indicador de múltiples rutas */}
+      <View style={styles.multiplePathsIndicator}>
+        <GitBranch size={14} color="#F59E0B" />
+        <Text style={styles.multiplePathsText}>
+          {branchedEvolutions.length} evolution path{branchedEvolutions.length > 1 ? "s" : ""}{" "}
+          available
+        </Text>
+      </View>
+
+      {/* Base evolution */}
+      <EvolutionCardVertical
+        evolution={baseEvolution}
+        isCurrent={baseEvolution.id === currentPokemonId}
+      />
+
+      {/* Flecha hacia abajo */}
+      <View style={styles.downArrowContainer}>
+        <ArrowDown size={24} color="#CBD5E1" strokeWidth={2.5} />
+      </View>
+
+      {/* Grid de evoluciones */}
+      <View style={styles.evolutionGrid}>
+        {branchedEvolutions.map((evolution) => (
+          <EvolutionCardVertical
+            key={evolution.id}
+            evolution={evolution}
+            isCurrent={evolution.id === currentPokemonId}
+          />
+        ))}
+      </View>
+    </View>
+  );
+}
+
+// Card vertical para evolución simple y branched
+function EvolutionCardVertical({
+  evolution,
+  isCurrent,
+}: {
+  evolution: EvolutionChain;
+  isCurrent: boolean;
+}) {
+  return (
+    <View style={[styles.evolutionCardVertical, isCurrent && styles.evolutionCardCurrent]}>
+      <Image
+        source={{ uri: evolution.image }}
+        style={styles.evolutionImageVertical}
+        resizeMode="contain"
+      />
+      <View style={styles.evolutionInfoVertical}>
+        <Text style={styles.evolutionNumber}>#{evolution.id.toString().padStart(3, "0")}</Text>
+        <Text style={styles.evolutionNameVertical}>
+          {evolution.name.charAt(0).toUpperCase() + evolution.name.slice(1)}
+        </Text>
+        {evolution.minLevel && <Text style={styles.evolutionLevel}>Lv. {evolution.minLevel}</Text>}
+      </View>
     </View>
   );
 }

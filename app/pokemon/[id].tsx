@@ -1,10 +1,13 @@
 import PokemonHeader from "@/components/PokemonHeader/PokemonHeader";
+import { SkeletonHeader } from "@/components/Skeletons/SkeletonHeader";
+import { SkeletonTabContent } from "@/components/Skeletons/SkeletonTabContent";
+import { SkeletonTabs } from "@/components/Skeletons/SkeletonTabs";
 import { fetchPokemonById } from "@/services/pokeapi";
 import { PokemonDetails } from "@/types/pokemon";
 import { pokemonTypeColors } from "@/utils/pokemonColors";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import styles from "./styles";
 import AboutTab from "./tabs/AboutTab";
 import MovesTab from "./tabs/MovesTab";
@@ -26,7 +29,7 @@ export default function PokemonDetailScreen() {
         const data = await fetchPokemonById(pokemonId);
         setPokemon(data);
       } catch (err) {
-        console.log(err);
+        console.error(err);
         setError("Error loading the Pokémon");
       } finally {
         setLoading(false);
@@ -38,22 +41,67 @@ export default function PokemonDetailScreen() {
     }
   }, [pokemonId]);
 
+  // Loading state with skeleton
   if (loading) {
     return (
-      <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color="#6390F0" />
+      <View style={[styles.screen, { backgroundColor: "#E2E8F0" }]}>
+        <SkeletonHeader />
+
+        <View style={styles.tabsWrapper}>
+          <SkeletonTabs />
+
+          {/* Inverted radius pieces */}
+          <View
+            style={[
+              styles.invertedRadiusContainer,
+              { height: 16, backgroundColor: "#fff", left: 0 },
+            ]}>
+            <View
+              style={[
+                styles.invertedRadiusCurve,
+                {
+                  backgroundColor: "#E2E8F0",
+                  borderBottomRightRadius: 16,
+                },
+              ]}
+            />
+          </View>
+
+          <View
+            style={[
+              styles.invertedRadiusContainer,
+              { height: 16, backgroundColor: "#fff", right: 0 },
+            ]}>
+            <View
+              style={[
+                styles.invertedRadiusCurve,
+                {
+                  backgroundColor: "#E2E8F0",
+                  borderBottomLeftRadius: 16,
+                },
+              ]}
+            />
+          </View>
+        </View>
+
+        {/* Content skeleton - Always show "about" variant during initial load */}
+        <View style={styles.content}>
+          <SkeletonTabContent type="about" />
+        </View>
       </View>
     );
   }
 
+  // Error state
   if (error || !pokemon) {
     return (
       <View style={styles.centerContainer}>
-        <Text style={styles.errorText}>{error}</Text>
+        <Text style={styles.errorText}>{error || "Pokémon not found"}</Text>
       </View>
     );
   }
 
+  // Success state
   const accentColor = pokemonTypeColors[pokemon.types[0]] || "#6390F0";
   const RADIUS = 16;
 
