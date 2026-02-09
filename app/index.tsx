@@ -9,9 +9,11 @@ import PokemonCard from "@/components/PokemonCard/PokemonCard";
 import SearchBar from "@/components/SearchBar/SearchBar";
 import { SkeletonList } from "@/components/Skeletons/SkeletonList";
 import { SkeletonTypeFilters } from "@/components/Skeletons/SkeletonTypeFilters";
+import { ThemeToggle } from "@/components/ThemeToggle/ThemeToggle";
 import { TypeFilters } from "@/components/TypeFilters/TypeFilters";
 import { usePokemonList } from "@/hooks/usePokemonList";
 import { usePokemonSearch } from "@/hooks/usePokemonSearch";
+import { useThemedStyles } from "@/hooks/useThemedStyles";
 import { useTypeFilter } from "@/hooks/useTypeFilter";
 import { fetchPokemonIndex } from "@/services/pokeapi";
 import { PokemonListIndex } from "@/types/pokemon";
@@ -47,6 +49,50 @@ export default function Index() {
     hasMoreFiltered,
     totalTypeResults,
   } = useTypeFilter(selectedTypes);
+
+  // Themed styles
+  const styles = useThemedStyles((colors) =>
+    StyleSheet.create({
+      container: {
+        flex: 1,
+        backgroundColor: colors.background,
+      },
+      skeletonContainer: {
+        flex: 1,
+        backgroundColor: colors.background,
+      },
+      listContainer: {
+        padding: 16,
+        paddingBottom: 32,
+      },
+      separator: {
+        height: 16,
+      },
+      headerRow: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        paddingHorizontal: 16,
+        paddingTop: 16,
+        paddingBottom: 8,
+      },
+      resultCounter: {
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        backgroundColor: colors.counterBackground,
+        borderRadius: 8,
+        marginBottom: 12,
+        alignSelf: "flex-start",
+      },
+      resultCounterText: {
+        fontSize: 12,
+        fontWeight: "700",
+        color: colors.counterText,
+        textTransform: "uppercase",
+        letterSpacing: 0.5,
+      },
+    }),
+  );
 
   useEffect(() => {
     const loadIndex = async () => {
@@ -151,10 +197,17 @@ export default function Index() {
     return false;
   }, [isSearching, hasActiveFilters, searchLoading, typeLoading, searchResults, typeResults]);
 
+  // Loading inicial con skeleton
   if (loading && pokemons.length === 0) {
     return (
       <View style={styles.skeletonContainer}>
         <View style={styles.listContainer}>
+          {/* Header con toggle */}
+          <View style={styles.headerRow}>
+            <View style={{ flex: 1 }} />
+            <ThemeToggle />
+          </View>
+
           <SearchBar value="" onChangeText={() => {}} />
           <SkeletonTypeFilters />
           <SkeletonList count={8} />
@@ -166,92 +219,71 @@ export default function Index() {
   if (error && pokemons.length === 0) return <ErrorState error={error} onRetry={refresh} />;
 
   return (
-    <FlatList
-      data={dataToRender}
-      keyExtractor={(item) => item.id.toString()}
-      contentContainerStyle={styles.listContainer}
-      ItemSeparatorComponent={Separator}
-      renderItem={renderItem}
-      onEndReached={handleLoadMore}
-      onEndReachedThreshold={0.5}
-      ListHeaderComponent={
-        <>
-          <SearchBar value={searchQuery} onChangeText={setSearchQuery} />
-          {indexLoading ? (
-            <SkeletonTypeFilters />
-          ) : (
-            <TypeFilters selectedTypes={selectedTypes} onTypeToggle={handleTypeToggle} />
-          )}
-          {(isSearching || hasActiveFilters) && dataToRender.length > 0 && (
-            <View style={styles.resultCounter}>
-              <Text style={styles.resultCounterText}>
-                {isSearching && hasActiveFilters
-                  ? `"${searchQuery}" in ${selectedTypes.join(" + ")} • ${totalResults} found`
-                  : `${totalResults} found • Showing ${currentCount}`}
-              </Text>
+    <View style={styles.container}>
+      <FlatList
+        data={dataToRender}
+        keyExtractor={(item) => item.id.toString()}
+        contentContainerStyle={styles.listContainer}
+        ItemSeparatorComponent={Separator}
+        renderItem={renderItem}
+        onEndReached={handleLoadMore}
+        onEndReachedThreshold={0.5}
+        ListHeaderComponent={
+          <>
+            {/* Header con toggle de tema */}
+            <View style={styles.headerRow}>
+              <View style={{ flex: 1 }} />
+              <ThemeToggle />
             </View>
-          )}
-        </>
-      }
-      ListEmptyComponent={() => {
-        if (isInitialLoading) return <SearchingState />;
-        if ((isSearching || hasActiveFilters) && !isInitialLoading) return <NoResultsState />;
-        return null;
-      }}
-      ListFooterComponent={() => {
-        if (isLoadingMore) return <LoadingMoreFooter />;
-        if (!canLoadMore && dataToRender.length > 0) return <EndOfListMessage />;
-        return null;
-      }}
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={onRefresh}
-          colors={["#6390F0"]}
-          tintColor="#6390F0"
-        />
-      }
-      removeClippedSubviews
-      maxToRenderPerBatch={10}
-      windowSize={10}
-      keyboardShouldPersistTaps="handled"
-    />
+
+            <SearchBar value={searchQuery} onChangeText={setSearchQuery} />
+            {indexLoading ? (
+              <SkeletonTypeFilters />
+            ) : (
+              <TypeFilters selectedTypes={selectedTypes} onTypeToggle={handleTypeToggle} />
+            )}
+            {(isSearching || hasActiveFilters) && dataToRender.length > 0 && (
+              <View style={styles.resultCounter}>
+                <Text style={styles.resultCounterText}>
+                  {isSearching && hasActiveFilters
+                    ? `"${searchQuery}" in ${selectedTypes.join(" + ")} • ${totalResults} found`
+                    : `${totalResults} found • Showing ${currentCount}`}
+                </Text>
+              </View>
+            )}
+          </>
+        }
+        ListEmptyComponent={() => {
+          if (isInitialLoading) return <SearchingState />;
+          if ((isSearching || hasActiveFilters) && !isInitialLoading) return <NoResultsState />;
+          return null;
+        }}
+        ListFooterComponent={() => {
+          if (isLoadingMore) return <LoadingMoreFooter />;
+          if (!canLoadMore && dataToRender.length > 0) return <EndOfListMessage />;
+          return null;
+        }}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={["#6390F0"]}
+            tintColor="#6390F0"
+          />
+        }
+        removeClippedSubviews
+        maxToRenderPerBatch={10}
+        windowSize={10}
+        keyboardShouldPersistTaps="handled"
+      />
+    </View>
   );
 }
 
-const Separator = () => <View style={styles.separator} />;
+const Separator = () => <View style={{ height: 16 }} />;
 
 const renderItem = ({ item }: { item: any }) => (
   <Pressable onPress={() => router.push(`/pokemon/${item.id}`)}>
     <PokemonCard pokemon={item} />
   </Pressable>
 );
-
-const styles = StyleSheet.create({
-  skeletonContainer: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-  listContainer: {
-    padding: 16,
-    paddingBottom: 32,
-  },
-  separator: {
-    height: 16,
-  },
-  resultCounter: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    backgroundColor: "#EEF2FF",
-    borderRadius: 8,
-    marginBottom: 12,
-    alignSelf: "flex-start",
-  },
-  resultCounterText: {
-    fontSize: 12,
-    fontWeight: "700",
-    color: "#6390F0",
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
-  },
-});
