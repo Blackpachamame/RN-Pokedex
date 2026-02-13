@@ -23,12 +23,10 @@ export const styles = StyleSheet.create({
     width: 70,
     textAlign: "center",
   },
-
   chipContainer: {
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 20,
-    backgroundColor: "#F8FAFC",
     borderWidth: 2,
     marginRight: 8,
   },
@@ -40,10 +38,6 @@ export const styles = StyleSheet.create({
   chipText: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#475569",
     textTransform: "capitalize",
-  },
-  chipTextSelected: {
-    color: "#fff",
   },
 });

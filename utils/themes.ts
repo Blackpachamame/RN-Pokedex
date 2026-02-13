@@ -65,8 +65,8 @@ export const darkTheme = {
   backgroundTertiary: "#334155",
 
   // Cards & Surfaces
-  card: "#1E293B",
-  cardBorder: "#334155",
+  card: "#0F172A",
+  cardBorder: "#0b1221",
 
   // Text
   text: "#F1F5F9",
@@ -92,7 +92,7 @@ export const darkTheme = {
   shimmer: "#334155",
 
   // Search & Inputs
-  inputBackground: "#334155",
+  inputBackground: "#1e2c41",
   inputBorder: "transparent",
   inputBorderFocused: "#6390F0",
 

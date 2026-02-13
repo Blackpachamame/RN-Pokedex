@@ -1,3 +1,4 @@
+import { useThemeColors } from "@/hooks/useThemedStyles";
 import { PokemonType } from "@/types/pokemon";
 import { pokemonTypeColors } from "@/utils/pokemonColors";
 import { pokemonTypeIcons } from "@/utils/pokemonTypeIcons";
@@ -22,6 +23,7 @@ type ChipProps = BaseProps & {
 type Props = BadgeProps | ChipProps;
 
 export function TypeBadge(props: Props) {
+  const colors = useThemeColors();
   const { type, variant } = props;
   const IconComponent = pokemonTypeIcons[type];
   const color = pokemonTypeColors[type] ?? "#ccc";
@@ -48,8 +50,10 @@ export function TypeBadge(props: Props) {
       onPress={onPress}
       style={[
         styles.chipContainer,
-        { borderColor: color },
-        selected && { backgroundColor: color },
+        {
+          backgroundColor: selected ? color : colors.filterBackground,
+          borderColor: color,
+        },
       ]}>
       <View style={styles.chipContent}>
         {IconComponent && (
@@ -60,7 +64,9 @@ export function TypeBadge(props: Props) {
             color={selected ? "#fff" : color}
           />
         )}
-        <Text style={[styles.chipText, selected && styles.chipTextSelected]}>{type}</Text>
+        <Text style={[styles.chipText, { color: selected ? "#fff" : colors.textSecondary }]}>
+          {type}
+        </Text>
       </View>
     </Wrapper>
   );

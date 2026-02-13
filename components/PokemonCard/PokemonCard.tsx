@@ -1,3 +1,4 @@
+import { useThemeColors } from "@/hooks/useThemedStyles";
 import { PokemonListItem } from "@/types/pokemon";
 import { getMultiTypeGradient } from "@/utils/color";
 import { LinearGradient } from "expo-linear-gradient";
@@ -11,19 +12,29 @@ type Props = {
 };
 
 const PokemonCard = React.memo(({ pokemon }: Props) => {
+  const colors = useThemeColors();
   const formattedNumber = `#${pokemon.id.toString().padStart(4, "0")}`;
   const typeGradient = getMultiTypeGradient(pokemon.types);
 
   return (
     <LinearGradient
-      style={styles.card}
-      colors={["rgba(230, 230, 230, 1)", "rgba(255, 255, 255, 1)", typeGradient[0]]}
+      style={[
+        styles.card,
+        {
+          backgroundColor: colors.card,
+          shadowColor: colors.text,
+        },
+      ]}
+      colors={[colors.cardBorder, colors.card, typeGradient[0]]}
       start={{ x: 0, y: 1 }}
       end={{ x: 1, y: 0 }}>
       <View style={styles.textContainer}>
         <View>
-          <Text style={styles.number}>{formattedNumber}</Text>
-          <Text numberOfLines={1} ellipsizeMode="tail" style={styles.name}>
+          <Text style={[styles.number, { color: colors.textTertiary }]}>{formattedNumber}</Text>
+          <Text
+            numberOfLines={1}
+            ellipsizeMode="tail"
+            style={[styles.name, { color: colors.text }]}>
             {pokemon.name}
           </Text>
 

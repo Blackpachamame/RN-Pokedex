@@ -3,11 +3,9 @@ import { StyleSheet } from "react-native";
 export const styles = StyleSheet.create({
   card: {
     flexDirection: "row",
-    backgroundColor: "white",
     borderRadius: 16,
     padding: 16,
     alignItems: "center",
-    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -20,13 +18,11 @@ export const styles = StyleSheet.create({
   number: {
     fontSize: 12,
     fontWeight: "700",
-    color: "#94A3B8",
     letterSpacing: 0.5,
   },
   name: {
     fontSize: 18,
     fontWeight: "700",
-    color: "#1E293B",
     textTransform: "capitalize",
   },
   typesContainer: {

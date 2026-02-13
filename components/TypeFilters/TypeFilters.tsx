@@ -1,4 +1,5 @@
 import { TypeBadge } from "@/components/TypeBadge/TypeBadge";
+import { useThemeColors } from "@/hooks/useThemedStyles";
 import { PokemonType } from "@/types/pokemon";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 
@@ -29,10 +30,12 @@ type Props = {
 };
 
 export const TypeFilters = ({ selectedTypes, onTypeToggle }: Props) => {
+  const colors = useThemeColors();
+
   return (
     <View style={styles.container}>
       {selectedTypes.length > 0 && (
-        <Text style={styles.label}>
+        <Text style={[styles.label, { color: colors.primary }]}>
           Filtering by {selectedTypes.length} type{selectedTypes.length > 1 ? "s" : ""}
         </Text>
       )}
@@ -61,7 +64,6 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 12,
     fontWeight: "600",
-    color: "#6390F0",
     marginBottom: 8,
     textTransform: "uppercase",
     letterSpacing: 0.5,
