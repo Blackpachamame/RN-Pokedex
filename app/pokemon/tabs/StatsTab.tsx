@@ -1,6 +1,8 @@
 import { StatBar } from "@/components/StatBar/StatBar";
+import { useThemeColors } from "@/hooks/useThemedStyles";
+import { useMemo } from "react";
 import { ScrollView, Text, View } from "react-native";
-import styles from "./stats.styles";
+import { createStatsStyles } from "./stats.styles";
 
 type Stat = {
   name: string;
@@ -13,6 +15,9 @@ type Props = {
 };
 
 export default function StatsTab({ stats, color }: Props) {
+  const colors = useThemeColors();
+  const styles = useMemo(() => createStatsStyles(colors), [colors]);
+
   return (
     <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
       <View style={styles.container}>

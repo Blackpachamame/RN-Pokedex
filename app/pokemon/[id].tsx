@@ -2,6 +2,7 @@ import PokemonHeader from "@/components/PokemonHeader/PokemonHeader";
 import { SkeletonHeader } from "@/components/Skeletons/SkeletonHeader";
 import { SkeletonTabContent } from "@/components/Skeletons/SkeletonTabContent";
 import { SkeletonTabs } from "@/components/Skeletons/SkeletonTabs";
+import { useThemeColors } from "@/hooks/useThemedStyles";
 import { fetchPokemonById } from "@/services/pokeapi";
 import { PokemonDetails } from "@/types/pokemon";
 import { pokemonTypeColors } from "@/utils/pokemonColors";
@@ -15,6 +16,7 @@ import PokemonTabs from "./tabs/PokemonTabs";
 import StatsTab from "./tabs/StatsTab";
 
 export default function PokemonDetailScreen() {
+  const colors = useThemeColors();
   const { id } = useLocalSearchParams();
   const pokemonId = Number(id);
 
@@ -44,48 +46,36 @@ export default function PokemonDetailScreen() {
   // Loading state with skeleton
   if (loading) {
     return (
-      <View style={[styles.screen, { backgroundColor: "#E2E8F0" }]}>
+      <View style={[styles.screen, { backgroundColor: colors.skeleton }]}>
         <SkeletonHeader />
-
         <View style={styles.tabsWrapper}>
           <SkeletonTabs />
-
-          {/* Inverted radius pieces */}
           <View
             style={[
               styles.invertedRadiusContainer,
-              { height: 16, backgroundColor: "#fff", left: 0 },
+              { height: 16, backgroundColor: colors.tabBackground, left: 0 },
             ]}>
             <View
               style={[
                 styles.invertedRadiusCurve,
-                {
-                  backgroundColor: "#E2E8F0",
-                  borderBottomRightRadius: 16,
-                },
+                { backgroundColor: colors.skeleton, borderBottomRightRadius: 16 },
               ]}
             />
           </View>
-
           <View
             style={[
               styles.invertedRadiusContainer,
-              { height: 16, backgroundColor: "#fff", right: 0 },
+              { height: 16, backgroundColor: colors.tabBackground, right: 0 },
             ]}>
             <View
               style={[
                 styles.invertedRadiusCurve,
-                {
-                  backgroundColor: "#E2E8F0",
-                  borderBottomLeftRadius: 16,
-                },
+                { backgroundColor: colors.skeleton, borderBottomLeftRadius: 16 },
               ]}
             />
           </View>
         </View>
-
-        {/* Content skeleton - Always show "about" variant during initial load */}
-        <View style={styles.content}>
+        <View style={[styles.content, { backgroundColor: colors.background }]}>
           <SkeletonTabContent type="about" />
         </View>
       </View>
@@ -121,38 +111,31 @@ export default function PokemonDetailScreen() {
         <View
           style={[
             styles.invertedRadiusContainer,
-            { height: RADIUS, backgroundColor: "#fff", left: 0 },
+            { height: RADIUS, backgroundColor: colors.tabBackground, left: 0 },
           ]}>
           <View
             style={[
               styles.invertedRadiusCurve,
-              {
-                backgroundColor: accentColor,
-                borderBottomRightRadius: RADIUS,
-              },
+              { backgroundColor: accentColor, borderBottomRightRadius: RADIUS },
             ]}
           />
         </View>
-
         <View
           style={[
             styles.invertedRadiusContainer,
-            { height: RADIUS, backgroundColor: "#fff", right: 0 },
+            { height: RADIUS, backgroundColor: colors.tabBackground, right: 0 },
           ]}>
           <View
             style={[
               styles.invertedRadiusCurve,
-              {
-                backgroundColor: accentColor,
-                borderBottomLeftRadius: RADIUS,
-              },
+              { backgroundColor: accentColor, borderBottomLeftRadius: RADIUS },
             ]}
           />
         </View>
       </View>
 
       {/* Content */}
-      <View style={styles.content}>
+      <View style={[styles.content, { backgroundColor: colors.background }]}>
         {activeTab === "about" && <AboutTab pokemon={pokemon} currentPokemonId={pokemon.id} />}
         {activeTab === "stats" && <StatsTab stats={pokemon.stats} color={accentColor} />}
         {activeTab === "moves" && <MovesTab moves={pokemon.moves} />}

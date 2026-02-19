@@ -1,3 +1,4 @@
+import { useThemeColors } from "@/hooks/useThemedStyles";
 import { BarChart3, Info, Zap } from "lucide-react-native";
 import { useEffect } from "react";
 import { Pressable, Text, View } from "react-native";
@@ -36,11 +37,13 @@ function TabItem({
   isActive,
   onPress,
   accentColor,
+  inactiveColor,
 }: {
   tab: TabConfig;
   isActive: boolean;
   onPress: () => void;
   accentColor: string;
+  inactiveColor: string;
 }) {
   const { Icon } = tab;
 
@@ -94,7 +97,7 @@ function TabItem({
         {/* Ícono */}
         <Icon
           size={20}
-          color={isActive ? "#fff" : "#64748B"}
+          color={isActive ? "#fff" : inactiveColor}
           strokeWidth={2.5}
           style={{ zIndex: 2 }}
         />
@@ -107,9 +110,11 @@ function TabItem({
 }
 
 export default function PokemonTabs({ activeTab, onTabChange, accentColor = "#6390F0" }: Props) {
+  const colors = useThemeColors();
+
   return (
     <View style={styles.container}>
-      <View style={styles.tabsWrapper}>
+      <View style={[styles.tabsWrapper, { backgroundColor: colors.tabBackground }]}>
         {TABS.map((tab) => (
           <TabItem
             key={tab.key}
@@ -117,6 +122,7 @@ export default function PokemonTabs({ activeTab, onTabChange, accentColor = "#63
             isActive={activeTab === tab.key}
             onPress={() => onTabChange(tab.key)}
             accentColor={accentColor}
+            inactiveColor={colors.tabInactive}
           />
         ))}
       </View>

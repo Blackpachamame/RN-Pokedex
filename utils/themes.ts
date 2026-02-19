@@ -65,7 +65,7 @@ export const darkTheme = {
   backgroundTertiary: "#334155",
 
   // Cards & Surfaces
-  card: "#0F172A",
+  card: "#1E293B",
   cardBorder: "#0b1221",
 
   // Text
@@ -101,7 +101,7 @@ export const darkTheme = {
   skeletonHighlight: "rgba(255, 255, 255, 0.1)",
 
   // Tab
-  tabBackground: "#1E293B",
+  tabBackground: "#0F172A",
   tabInactive: "#94A3B8",
 
   // Type Filter

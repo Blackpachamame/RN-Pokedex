@@ -1,3 +1,4 @@
+import { useThemeColors } from "@/hooks/useThemedStyles";
 import React, { useEffect, useRef } from "react";
 import { Animated, StyleSheet, View } from "react-native";
 
@@ -13,6 +14,7 @@ type Props = {
  */
 export const SkeletonTabContent = React.memo(({ type = "about" }: Props) => {
   const shimmerAnim = useRef(new Animated.Value(0)).current;
+  const colors = useThemeColors();
 
   useEffect(() => {
     const shimmer = Animated.loop(
@@ -40,29 +42,34 @@ export const SkeletonTabContent = React.memo(({ type = "about" }: Props) => {
     outputRange: [0.3, 0.7],
   });
 
-  if (type === "stats") {
-    return <SkeletonStats opacity={opacity} />;
-  }
-
-  if (type === "moves") {
-    return <SkeletonMoves opacity={opacity} />;
-  }
-
-  // Default: About tab
-  return <SkeletonAbout opacity={opacity} />;
+  if (type === "stats") return <SkeletonStats opacity={opacity} skeletonColor={colors.skeleton} />;
+  if (type === "moves") return <SkeletonMoves opacity={opacity} skeletonColor={colors.skeleton} />;
+  return <SkeletonAbout opacity={opacity} skeletonColor={colors.skeleton} />;
 });
 
 // ============================================
 // ABOUT TAB SKELETON
 // ============================================
-function SkeletonAbout({ opacity }: { opacity: Animated.AnimatedInterpolation<number> }) {
+function SkeletonAbout({
+  opacity,
+  skeletonColor,
+}: {
+  opacity: Animated.AnimatedInterpolation<number>;
+  skeletonColor: string;
+}) {
   return (
     <View style={styles.aboutContainer}>
       {/* Description skeleton (3 lines) */}
       <View style={styles.descriptionContainer}>
-        <Animated.View style={[styles.textLine, { width: "100%", opacity }]} />
-        <Animated.View style={[styles.textLine, { width: "95%", opacity }]} />
-        <Animated.View style={[styles.textLine, { width: "85%", opacity }]} />
+        <Animated.View
+          style={[styles.textLine, { width: "100%", opacity, backgroundColor: skeletonColor }]}
+        />
+        <Animated.View
+          style={[styles.textLine, { width: "95%", opacity, backgroundColor: skeletonColor }]}
+        />
+        <Animated.View
+          style={[styles.textLine, { width: "85%", opacity, backgroundColor: skeletonColor }]}
+        />
       </View>
 
       {/* Data cards (Weight/Height) */}
@@ -79,7 +86,7 @@ function SkeletonAbout({ opacity }: { opacity: Animated.AnimatedInterpolation<nu
         </View>
       </View>
 
-      <View style={styles.separator} />
+      <View style={[styles.separator, { backgroundColor: skeletonColor }]} />
 
       {/* Category section */}
       <View style={styles.section}>
@@ -87,7 +94,7 @@ function SkeletonAbout({ opacity }: { opacity: Animated.AnimatedInterpolation<nu
         <Animated.View style={[styles.textLine, { width: "60%", opacity }]} />
       </View>
 
-      <View style={styles.separator} />
+      <View style={[styles.separator, { backgroundColor: skeletonColor }]} />
 
       {/* Abilities section */}
       <View style={styles.section}>
@@ -95,7 +102,7 @@ function SkeletonAbout({ opacity }: { opacity: Animated.AnimatedInterpolation<nu
         <Animated.View style={[styles.textLine, { width: "70%", opacity }]} />
       </View>
 
-      <View style={styles.separator} />
+      <View style={[styles.separator, { backgroundColor: skeletonColor }]} />
 
       {/* Weaknesses section */}
       <View style={styles.section}>
@@ -107,7 +114,7 @@ function SkeletonAbout({ opacity }: { opacity: Animated.AnimatedInterpolation<nu
         </View>
       </View>
 
-      <View style={styles.separator} />
+      <View style={[styles.separator, { backgroundColor: skeletonColor }]} />
 
       {/* Evolution section */}
       <View style={styles.section}>
@@ -123,17 +130,23 @@ function SkeletonAbout({ opacity }: { opacity: Animated.AnimatedInterpolation<nu
 // ============================================
 // STATS TAB SKELETON
 // ============================================
-function SkeletonStats({ opacity }: { opacity: Animated.AnimatedInterpolation<number> }) {
+function SkeletonStats({
+  opacity,
+  skeletonColor,
+}: {
+  opacity: Animated.AnimatedInterpolation<number>;
+  skeletonColor: string;
+}) {
   return (
     <View style={styles.statsContainer}>
       {[1, 2, 3, 4, 5, 6].map((_, index) => (
         <View key={index} style={styles.statRow}>
           {/* Stat name */}
-          <Animated.View style={[styles.statName, { opacity }]} />
+          <Animated.View style={[styles.statName, { opacity, backgroundColor: skeletonColor }]} />
           {/* Stat bar */}
-          <Animated.View style={[styles.statBar, { opacity }]} />
+          <Animated.View style={[styles.statBar, { opacity, backgroundColor: skeletonColor }]} />
           {/* Stat value */}
-          <Animated.View style={[styles.statValue, { opacity }]} />
+          <Animated.View style={[styles.statValue, { opacity, backgroundColor: skeletonColor }]} />
         </View>
       ))}
     </View>
@@ -143,11 +156,20 @@ function SkeletonStats({ opacity }: { opacity: Animated.AnimatedInterpolation<nu
 // ============================================
 // MOVES TAB SKELETON
 // ============================================
-function SkeletonMoves({ opacity }: { opacity: Animated.AnimatedInterpolation<number> }) {
+function SkeletonMoves({
+  opacity,
+  skeletonColor,
+}: {
+  opacity: Animated.AnimatedInterpolation<number>;
+  skeletonColor: string;
+}) {
   return (
     <View style={styles.movesContainer}>
       {[1, 2, 3, 4, 5].map((_, index) => (
-        <Animated.View key={index} style={[styles.moveCard, { opacity }]} />
+        <Animated.View
+          key={index}
+          style={[styles.moveCard, { opacity, backgroundColor: skeletonColor }]}
+        />
       ))}
     </View>
   );
@@ -170,7 +192,6 @@ const styles = StyleSheet.create({
   },
   textLine: {
     height: 16,
-    backgroundColor: "#E2E8F0",
     borderRadius: 4,
     marginBottom: 8,
   },
@@ -188,18 +209,15 @@ const styles = StyleSheet.create({
   dataLabel: {
     width: 80,
     height: 18,
-    backgroundColor: "#E2E8F0",
     borderRadius: 4,
   },
   dataValue: {
     width: 100,
     height: 22,
-    backgroundColor: "#E2E8F0",
     borderRadius: 4,
   },
   separator: {
     height: 1,
-    backgroundColor: "#E2E8F0",
   },
   section: {
     gap: 12,
@@ -207,7 +225,6 @@ const styles = StyleSheet.create({
   sectionTitle: {
     width: 120,
     height: 18,
-    backgroundColor: "#E2E8F0",
     borderRadius: 4,
   },
   weaknessesContainer: {
@@ -217,7 +234,6 @@ const styles = StyleSheet.create({
   },
   typeBadge: {
     height: 30,
-    backgroundColor: "#E2E8F0",
     borderRadius: 16,
   },
   evolutionContainer: {
@@ -226,7 +242,6 @@ const styles = StyleSheet.create({
   evolutionCard: {
     width: "100%",
     height: 120,
-    backgroundColor: "#E2E8F0",
     borderRadius: 16,
   },
 
@@ -247,19 +262,16 @@ const styles = StyleSheet.create({
   statName: {
     width: 100,
     height: 16,
-    backgroundColor: "#E2E8F0",
     borderRadius: 4,
   },
   statBar: {
     flex: 1,
     height: 8,
-    backgroundColor: "#E2E8F0",
     borderRadius: 4,
   },
   statValue: {
     width: 40,
     height: 18,
-    backgroundColor: "#E2E8F0",
     borderRadius: 4,
   },
 
@@ -274,7 +286,6 @@ const styles = StyleSheet.create({
   moveCard: {
     width: "100%",
     height: 80,
-    backgroundColor: "#E2E8F0",
     borderRadius: 12,
   },
 });

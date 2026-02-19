@@ -1,8 +1,10 @@
 import { TypeBadge } from "@/components/TypeBadge/TypeBadge";
+import { useThemeColors } from "@/hooks/useThemedStyles";
 import { EvolutionChain } from "@/types/pokemon";
 import { ArrowDown, GitBranch, LucideIcon, MoveVertical, Weight } from "lucide-react-native";
+import { useMemo } from "react";
 import { Image, ScrollView, Text, View } from "react-native";
-import styles from "./about.styles";
+import { createAboutStyles } from "./about.styles";
 
 type Props = {
   pokemon: {
@@ -18,6 +20,8 @@ type Props = {
 };
 
 export default function AboutTab({ pokemon, currentPokemonId }: Props) {
+  const colors = useThemeColors();
+  const styles = useMemo(() => createAboutStyles(colors), [colors]);
   const { description, height, weight, abilities, category, weaknesses, evolutionChain } = pokemon;
 
   return (
@@ -103,6 +107,8 @@ function DataCard({
   value: string;
   icon: LucideIcon;
 }) {
+  const colors = useThemeColors();
+  const styles = useMemo(() => createAboutStyles(colors), [colors]);
   return (
     <View style={styles.dataCard}>
       <View>
@@ -143,6 +149,8 @@ function SimpleEvolution({
   evolutions: EvolutionChain[];
   currentPokemonId: number;
 }) {
+  const colors = useThemeColors();
+  const styles = useMemo(() => createAboutStyles(colors), [colors]);
   return (
     <View style={styles.simpleContainer}>
       {evolutions.map((evolution, index) => {
@@ -172,6 +180,8 @@ function BranchedEvolution({
   evolutions: EvolutionChain[];
   currentPokemonId: number;
 }) {
+  const colors = useThemeColors();
+  const styles = useMemo(() => createAboutStyles(colors), [colors]);
   const baseEvolution = evolutions[0];
   const branchedEvolutions = evolutions.slice(1);
 
@@ -219,6 +229,8 @@ function EvolutionCardVertical({
   evolution: EvolutionChain;
   isCurrent: boolean;
 }) {
+  const colors = useThemeColors();
+  const styles = useMemo(() => createAboutStyles(colors), [colors]);
   return (
     <View style={[styles.evolutionCardVertical, isCurrent && styles.evolutionCardCurrent]}>
       <Image

@@ -1,6 +1,8 @@
 import { getMultiTypeGradient } from "@/utils/color";
 import { LinearGradient } from "expo-linear-gradient";
-import { Image, Text, View } from "react-native";
+import { useRouter } from "expo-router";
+import { ChevronLeft, Heart } from "lucide-react-native";
+import { Image, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { TypeBadge } from "../TypeBadge/TypeBadge";
 import { styles } from "./styles";
@@ -16,11 +18,12 @@ function PokemonHeader({ id, name, image, types }: PokemonHeaderProps) {
   const formattedNumber = `#${id.toString().padStart(4, "0")}`;
   const gradientColors = getMultiTypeGradient(types);
   const insets = useSafeAreaInsets();
+  const router = useRouter();
 
   return (
     <LinearGradient
       colors={gradientColors}
-      style={[styles.container, { paddingTop: insets.top + 16 }]}
+      style={[styles.container, { paddingTop: insets.top + 12 }]}
       start={{ x: 0, y: 1 }}
       end={{ x: 0, y: 0 }}>
       <Image
@@ -29,23 +32,37 @@ function PokemonHeader({ id, name, image, types }: PokemonHeaderProps) {
         resizeMode="contain"
       />
 
+      {/* Fila 1: Back | Número | Favorito */}
       <View style={styles.topRow}>
-        <Text numberOfLines={2} ellipsizeMode="tail" style={styles.name}>
-          {name}
-        </Text>
+        <TouchableOpacity
+          onPress={() => router.back()}
+          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
+          <ChevronLeft size={28} color="#fff" strokeWidth={2.5} />
+        </TouchableOpacity>
+
         <Text style={styles.number}>{formattedNumber}</Text>
+
+        <TouchableOpacity hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
+          <Heart size={24} color="#fff" strokeWidth={2.5} />
+        </TouchableOpacity>
       </View>
 
-      {/* Types */}
+      {/* Nombre */}
+      <Text numberOfLines={2} ellipsizeMode="tail" style={styles.name}>
+        {name}
+      </Text>
+
+      {/* Tipos */}
       <View style={styles.types}>
         {types.map((type) => (
           <TypeBadge key={type} type={type} variant="badge" extend={true} />
         ))}
       </View>
 
-      {/* Image */}
+      {/* Imagen centrada */}
       <Image source={{ uri: image }} style={styles.image} resizeMode="contain" />
     </LinearGradient>
   );
 }
+
 export default PokemonHeader;

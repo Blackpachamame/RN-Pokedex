@@ -1,8 +1,9 @@
+import { useThemeColors } from "@/hooks/useThemedStyles";
 import { pokemonTypeColors } from "@/utils/pokemonColors";
-import React from "react";
+import React, { useMemo } from "react";
 import { Text, View } from "react-native";
 import Svg, { Circle, Path } from "react-native-svg";
-import { styles } from "./styles";
+import { createMoveCardStyles } from "./styles";
 
 type Props = {
   name: string;
@@ -23,6 +24,8 @@ export default function MoveCard({
   pp,
   levelLearnedAt,
 }: Props) {
+  const colors = useThemeColors();
+  const styles = useMemo(() => createMoveCardStyles(colors), [colors]);
   const typeColor = pokemonTypeColors[type as keyof typeof pokemonTypeColors] || "#94A3B8";
 
   // Formatear nombre (ej: "thunder-punch" → "Thunder Punch")

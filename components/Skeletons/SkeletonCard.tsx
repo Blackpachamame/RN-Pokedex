@@ -1,3 +1,4 @@
+import { useThemeColors } from "@/hooks/useThemedStyles";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useRef } from "react";
 import { Animated, StyleSheet, View } from "react-native";
@@ -8,6 +9,7 @@ import { Animated, StyleSheet, View } from "react-native";
  */
 export const SkeletonCard = React.memo(() => {
   const shimmerAnim = useRef(new Animated.Value(0)).current;
+  const colors = useThemeColors();
 
   useEffect(() => {
     const shimmer = Animated.loop(
@@ -38,28 +40,34 @@ export const SkeletonCard = React.memo(() => {
   return (
     <LinearGradient
       style={styles.card}
-      colors={["rgba(230, 230, 230, 1)", "rgba(255, 255, 255, 1)", "rgba(240, 240, 240, 1)"]}
+      colors={[colors.skeleton, colors.backgroundSecondary, colors.skeleton]}
       start={{ x: 0, y: 1 }}
       end={{ x: 1, y: 0 }}>
       <View style={styles.textContainer}>
         <View style={styles.contentWrapper}>
           {/* Number skeleton - #0000 */}
-          <Animated.View style={[styles.numberSkeleton, { opacity }]} />
-
+          <Animated.View
+            style={[styles.numberSkeleton, { opacity, backgroundColor: colors.skeleton }]}
+          />
           {/* Name skeleton */}
-          <Animated.View style={[styles.nameSkeleton, { opacity }]} />
-
+          <Animated.View
+            style={[styles.nameSkeleton, { opacity, backgroundColor: colors.skeleton }]}
+          />
           {/* Type badges skeleton */}
           <View style={styles.typesContainer}>
-            <Animated.View style={[styles.typeBadge, { opacity }]} />
-            <Animated.View style={[styles.typeBadge, { opacity, width: 60 }]} />
+            <Animated.View
+              style={[styles.typeBadge, { opacity, backgroundColor: colors.skeleton }]}
+            />
+            <Animated.View
+              style={[styles.typeBadge, { opacity, width: 60, backgroundColor: colors.skeleton }]}
+            />
           </View>
         </View>
       </View>
-
-      {/* Image skeleton - círculo como el Pokémon */}
       <View style={styles.imageContainer}>
-        <Animated.View style={[styles.imageSkeleton, { opacity }]} />
+        <Animated.View
+          style={[styles.imageSkeleton, { opacity, backgroundColor: colors.skeleton }]}
+        />
       </View>
     </LinearGradient>
   );
@@ -91,14 +99,12 @@ const styles = StyleSheet.create({
   numberSkeleton: {
     width: 50,
     height: 14,
-    backgroundColor: "#E2E8F0",
     borderRadius: 4,
   },
   // Pokemon name style
   nameSkeleton: {
     width: 130,
     height: 20,
-    backgroundColor: "#E2E8F0",
     borderRadius: 4,
     marginTop: 2,
   },
@@ -111,7 +117,6 @@ const styles = StyleSheet.create({
   typeBadge: {
     width: 70,
     height: 24,
-    backgroundColor: "#E2E8F0",
     borderRadius: 12,
   },
   imageContainer: {
@@ -125,7 +130,6 @@ const styles = StyleSheet.create({
   imageSkeleton: {
     width: 64,
     height: 64,
-    backgroundColor: "#E2E8F0",
     borderRadius: 32,
   },
 });

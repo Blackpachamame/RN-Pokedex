@@ -52,6 +52,15 @@ const styles = StyleSheet.create({
     color: "#64748B",
     textAlign: "center",
   },
+
+  contentDark: {
+    flex: 1,
+    backgroundColor: "#1E293B", // darkTheme.backgroundSecondary
+  },
+
+  invertedRadiusDark: {
+    backgroundColor: "#1E293B",
+  },
 });
 
 export default styles;

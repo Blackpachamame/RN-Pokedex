@@ -1,3 +1,4 @@
+import { useThemeColors } from "@/hooks/useThemedStyles";
 import React, { useEffect, useRef } from "react";
 import { Animated, Platform, StyleSheet, View } from "react-native";
 
@@ -7,6 +8,7 @@ import { Animated, Platform, StyleSheet, View } from "react-native";
  */
 export const SkeletonTabs = React.memo(() => {
   const shimmerAnim = useRef(new Animated.Value(0)).current;
+  const colors = useThemeColors();
 
   useEffect(() => {
     const shimmer = Animated.loop(
@@ -36,13 +38,15 @@ export const SkeletonTabs = React.memo(() => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.tabsWrapper}>
+      <View style={[styles.tabsWrapper, { backgroundColor: colors.tabBackground }]}>
         {/* 3 tab skeletons */}
-        {[48, 48, 48].map((width, index) => (
+        {[48, 48, 48].map((_, index) => (
           <View key={index} style={styles.tab}>
             <View style={styles.tabContent}>
               {/* Icon skeleton (círculo) */}
-              <Animated.View style={[styles.iconSkeleton, { opacity }]} />
+              <Animated.View
+                style={[styles.iconSkeleton, { opacity, backgroundColor: colors.skeleton }]}
+              />
             </View>
           </View>
         ))}

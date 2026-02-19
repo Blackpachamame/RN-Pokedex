@@ -9,18 +9,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     alignItems: "center",
-    backgroundColor: "#FFFFFF",
     borderTopLeftRadius: 32,
     borderTopRightRadius: 32,
     marginHorizontal: 16,
     paddingVertical: 10,
     ...Platform.select({
-      web: {
-        paddingHorizontal: 8,
-      },
-      default: {
-        paddingHorizontal: 0,
-      },
+      web: { paddingHorizontal: 8 },
+      default: { paddingHorizontal: 0 },
     }),
   },
   tab: {
