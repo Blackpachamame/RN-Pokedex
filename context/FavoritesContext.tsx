@@ -2,7 +2,7 @@ import { PokemonListItem } from "@/types/pokemon";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react";
 
-const FAVORITES_STORAGE_KEY = "@pokedex_favorites";
+const FAVORITES_STORAGE_KEY = "@pokekit_favorites";
 
 type FavoritesContextType = {
   favorites: PokemonListItem[];

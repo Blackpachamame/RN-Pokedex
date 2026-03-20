@@ -1,4 +1,4 @@
-# 🎮 Pokédex - React Native App
+# 🎮 PokéKit - React Native App
 
 Una aplicación móvil moderna para explorar el universo Pokémon, construida con React Native y PokeAPI. Permite navegar por más de 1,000 Pokémon con búsqueda en tiempo real, filtros por tipo, y detalles completos incluyendo estadísticas, movimientos y cadenas evolutivas.
 
@@ -67,8 +67,8 @@ npm >= 9.0.0
 
 ```bash
 # Clonar el repositorio
-git clone https://github.com/tu-usuario/pokedex-app.git
-cd pokedex-app
+git clone https://github.com/tu-usuario/pokekit-app.git
+cd pokekit-app
 
 # Instalar dependencias
 npm install
@@ -95,7 +95,7 @@ npm run web
 ## 📁 Estructura del Proyecto
 
 ```
-pokedex-app/
+pokekit-app/
 ├── app/                      # Screens (Expo Router)
 │   ├── index.tsx            # Pantalla principal (lista)
 │   ├── pokemon/[id].tsx     # Pantalla de detalle

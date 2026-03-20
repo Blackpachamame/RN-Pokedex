@@ -5,218 +5,63 @@ import {
   SearchingState,
 } from "@/components/EmptyStates/EmptyStates";
 import { EndOfListMessage } from "@/components/EndOfListMessage/EndOfListMessage";
+import { PokedexHeader } from "@/components/PokedexScreen/PokedexHeader";
+import { PokedexResultCounter } from "@/components/PokedexScreen/PokedexResultCounter";
+import { createStyles } from "@/components/PokedexScreen/PokedexScreen.styles";
 import PokemonCard from "@/components/PokemonCard/PokemonCard";
 import SearchBar from "@/components/SearchBar/SearchBar";
 import { SkeletonList } from "@/components/Skeletons/SkeletonList";
 import { SkeletonTypeFilters } from "@/components/Skeletons/SkeletonTypeFilters";
 import { ThemeToggle } from "@/components/ThemeToggle/ThemeToggle";
 import { TypeFilters } from "@/components/TypeFilters/TypeFilters";
-import { usePokemonList } from "@/hooks/usePokemonList";
-import { usePokemonSearch } from "@/hooks/usePokemonSearch";
-import { useThemeColors, useThemedStyles } from "@/hooks/useThemedStyles";
-import { useTypeFilter } from "@/hooks/useTypeFilter";
-import { fetchPokemonIndex } from "@/services/pokeapi";
-import { PokemonListIndex } from "@/types/pokemon";
+import { usePokedexData } from "@/hooks/usePokedexData";
+import { useThemeColors } from "@/hooks/useThemedStyles";
 import { router } from "expo-router";
-import { ChevronLeft } from "lucide-react-native";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import {
-  FlatList,
-  Pressable,
-  RefreshControl,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { useMemo } from "react";
+import { FlatList, Pressable, RefreshControl, View } from "react-native";
 
-export default function Index() {
-  const [pokemonsIndex, setPokemonsIndex] = useState<PokemonListIndex[]>([]);
-  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
+const Separator = () => <View style={{ height: 16 }} />;
 
-  const { pokemons, loading, loadingMore, refreshing, error, hasMore, loadMore, refresh } =
-    usePokemonList();
+const renderItem = ({ item }: { item: any }) => (
+  <Pressable onPress={() => router.push(`/pokemon/${item.id}`)}>
+    <PokemonCard pokemon={item} />
+  </Pressable>
+);
+
+export default function PokedexScreen() {
+  const colors = useThemeColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
 
   const {
+    dataToRender,
+    totalResults,
+    currentCount,
+    loading,
+    loadingMore,
+    refreshing,
+    error,
+    isInitialLoading,
+    canLoadMore,
     searchQuery,
     setSearchQuery,
-    searchResults,
-    searchLoading,
     isSearching,
-    clearSearch,
-    loadMoreSearch,
-    hasMoreSearch,
-    totalSearchResults,
-  } = usePokemonSearch(pokemonsIndex);
-
-  const {
-    typeResults,
-    typeLoading,
+    selectedTypes,
+    handleTypeToggle,
     hasActiveFilters,
     indexLoading,
-    loadMoreFiltered,
-    hasMoreFiltered,
-    totalTypeResults,
-  } = useTypeFilter(selectedTypes);
-  const colors = useThemeColors();
-  // Themed styles
-  const styles = useThemedStyles((colors) =>
-    StyleSheet.create({
-      container: {
-        flex: 1,
-        backgroundColor: colors.background,
-      },
-      skeletonContainer: {
-        flex: 1,
-        backgroundColor: colors.background,
-      },
-      listContainer: {
-        padding: 16,
-        paddingBottom: 32,
-      },
-      separator: {
-        height: 16,
-      },
-      headerRow: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        paddingHorizontal: 16,
-        paddingTop: 16,
-        paddingBottom: 8,
-      },
-      resultCounter: {
-        paddingVertical: 8,
-        paddingHorizontal: 16,
-        backgroundColor: colors.counterBackground,
-        borderRadius: 8,
-        marginBottom: 12,
-        alignSelf: "flex-start",
-      },
-      resultCounterText: {
-        fontSize: 12,
-        fontWeight: "700",
-        color: colors.counterText,
-        textTransform: "uppercase",
-        letterSpacing: 0.5,
-      },
-    }),
-  );
+    handleLoadMore,
+    onRefresh,
+    refresh,
+  } = usePokedexData();
 
-  useEffect(() => {
-    const loadIndex = async () => {
-      try {
-        const data = await fetchPokemonIndex();
-        setPokemonsIndex(data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    loadIndex();
-  }, []);
-
-  const handleTypeToggle = useCallback((type: string) => {
-    setSelectedTypes((prev) =>
-      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type],
-    );
-  }, []);
-
-  const onRefresh = useCallback(() => {
-    clearSearch();
-    setSelectedTypes([]);
-    refresh();
-  }, [clearSearch, refresh]);
-
-  const { dataToRender, totalResults, currentCount } = useMemo(() => {
-    let data = [];
-
-    if (isSearching && hasActiveFilters) {
-      data = searchResults.filter((pokemon) =>
-        pokemon.types.some((type) => selectedTypes.includes(type)),
-      );
-    } else if (isSearching) {
-      data = searchResults;
-    } else if (hasActiveFilters) {
-      data = typeResults;
-    } else {
-      data = pokemons;
-    }
-
-    const uniqueMap = new Map();
-    data.forEach((p) => uniqueMap.set(p.id, p));
-    const unique = Array.from(uniqueMap.values());
-
-    return {
-      dataToRender: unique,
-      totalResults: isSearching
-        ? totalSearchResults
-        : hasActiveFilters
-          ? totalTypeResults
-          : unique.length,
-      currentCount: unique.length,
-    };
-  }, [
-    isSearching,
-    hasActiveFilters,
-    searchResults,
-    typeResults,
-    pokemons,
-    selectedTypes,
-    totalSearchResults,
-    totalTypeResults,
-  ]);
-
-  const handleLoadMore = useCallback(() => {
-    if (isSearching && hasActiveFilters) return;
-    if (isSearching) loadMoreSearch();
-    else if (hasActiveFilters) loadMoreFiltered();
-    else loadMore();
-  }, [isSearching, hasActiveFilters, loadMoreSearch, loadMoreFiltered, loadMore]);
-
-  const canLoadMore = useMemo(() => {
-    return isSearching && hasActiveFilters
-      ? false
-      : isSearching
-        ? hasMoreSearch
-        : hasActiveFilters
-          ? hasMoreFiltered
-          : hasMore;
-  }, [isSearching, hasActiveFilters, hasMoreSearch, hasMoreFiltered, hasMore]);
-
-  const isLoadingMore = useMemo(() => {
-    if (isSearching && hasActiveFilters) return false;
-    if (isSearching && searchResults.length > 0) return searchLoading;
-    if (hasActiveFilters && typeResults.length > 0) return typeLoading;
-    if (pokemons.length > 0) return loadingMore;
-    return false;
-  }, [
-    isSearching,
-    hasActiveFilters,
-    searchLoading,
-    typeLoading,
-    loadingMore,
-    searchResults,
-    typeResults,
-    pokemons,
-  ]);
-
-  const isInitialLoading = useMemo(() => {
-    if (isSearching && searchResults.length === 0) return searchLoading;
-    if (hasActiveFilters && typeResults.length === 0) return typeLoading;
-    return false;
-  }, [isSearching, hasActiveFilters, searchLoading, typeLoading, searchResults, typeResults]);
-
-  // Loading inicial con skeleton
-  if (loading && pokemons.length === 0) {
+  if (loading && dataToRender.length === 0) {
     return (
       <View style={styles.skeletonContainer}>
         <View style={styles.listContainer}>
-          {/* Header con toggle */}
           <View style={styles.headerRow}>
             <View style={{ flex: 1 }} />
             <ThemeToggle />
           </View>
-
           <SearchBar value="" onChangeText={() => {}} />
           <SkeletonTypeFilters />
           <SkeletonList count={8} />
@@ -225,7 +70,9 @@ export default function Index() {
     );
   }
 
-  if (error && pokemons.length === 0) return <ErrorState error={error} onRetry={refresh} />;
+  if (error && dataToRender.length === 0) {
+    return <ErrorState error={error} onRetry={refresh} />;
+  }
 
   return (
     <View style={styles.container}>
@@ -239,17 +86,7 @@ export default function Index() {
         onEndReachedThreshold={0.5}
         ListHeaderComponent={
           <>
-            {/* Header con toggle de tema */}
-            <View style={styles.headerRow}>
-              <TouchableOpacity
-                onPress={() => router.back()}
-                hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
-                <ChevronLeft size={26} color={colors.text} strokeWidth={2.5} />
-              </TouchableOpacity>
-              <View style={{ flex: 1 }} />
-              <ThemeToggle />
-            </View>
-
+            <PokedexHeader />
             <SearchBar value={searchQuery} onChangeText={setSearchQuery} />
             {indexLoading ? (
               <SkeletonTypeFilters />
@@ -257,13 +94,14 @@ export default function Index() {
               <TypeFilters selectedTypes={selectedTypes} onTypeToggle={handleTypeToggle} />
             )}
             {(isSearching || hasActiveFilters) && dataToRender.length > 0 && (
-              <View style={styles.resultCounter}>
-                <Text style={styles.resultCounterText}>
-                  {isSearching && hasActiveFilters
-                    ? `"${searchQuery}" in ${selectedTypes.join(" + ")} • ${totalResults} found`
-                    : `${totalResults} found • Showing ${currentCount}`}
-                </Text>
-              </View>
+              <PokedexResultCounter
+                searchQuery={searchQuery}
+                selectedTypes={selectedTypes}
+                isSearching={isSearching}
+                hasActiveFilters={hasActiveFilters}
+                totalResults={totalResults}
+                currentCount={currentCount}
+              />
             )}
           </>
         }
@@ -273,7 +111,7 @@ export default function Index() {
           return null;
         }}
         ListFooterComponent={() => {
-          if (isLoadingMore) return <LoadingMoreFooter />;
+          if (loadingMore) return <LoadingMoreFooter />;
           if (!canLoadMore && dataToRender.length > 0) return <EndOfListMessage />;
           return null;
         }}
@@ -293,11 +131,3 @@ export default function Index() {
     </View>
   );
 }
-
-const Separator = () => <View style={{ height: 16 }} />;
-
-const renderItem = ({ item }: { item: any }) => (
-  <Pressable onPress={() => router.push(`/pokemon/${item.id}`)}>
-    <PokemonCard pokemon={item} />
-  </Pressable>
-);
